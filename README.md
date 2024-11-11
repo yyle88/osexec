@@ -1,5 +1,5 @@
 # osexec
-simple utils to use golang os/exec
+Simple utilities to use Golang's `os/exec` package.
 
 ## Features
 
@@ -22,7 +22,7 @@ go get github.com/yyle88/osexec
 Executes a command in the specified path.
 
 #### Parameters:
-- `path`: The where the command should be executed.
+- `path`: The path where the command should be executed.
 - `name`: The name of the command to execute.
 - `args`: Arguments to pass to the command.
 
@@ -92,7 +92,7 @@ Creates and returns a new `CMX` instance.
 ### Chainable Methods
 
 - **WithEnvs(envs []string) *CMX**: Sets custom environment variables for the command.
-- **WithPath(path string) *CMX**: Sets the working for the command.
+- **WithPath(path string) *CMX**: Sets the working path for the command.
 - **WithShellType(shellType string) *CMX**: Sets the shell type (e.g., `bash`).
 - **WithShellFlag(shellFlag string) *CMX**: Sets the shell flag (e.g., `-c`).
 
