@@ -81,35 +81,35 @@ if err != nil {
 
 ---
 
-## `CMX` Structure and Methods
+## `CMC` Structure and Methods
 
-The `CMX` structure provides a flexible way to configure and execute commands. You can set custom environment variables, directories, shell types, and shell flags using a chainable interface.
+The `CMC` structure provides a flexible way to configure and execute commands. You can set custom environment variables, directories, shell types, and shell flags using a chainable interface.
 
-### `NewCMX() *CMX`
+### `NewCMC() *CMC`
 
-Creates and returns a new `CMX` instance.
+Creates and returns a new `CMC` instance.
 
 ### Chainable Methods
 
-- **WithEnvs(envs []string) *CMX**: Sets custom environment variables for the command.
-- **WithPath(path string) *CMX**: Sets the working path for the command.
-- **WithShellType(shellType string) *CMX**: Sets the shell type (e.g., `bash`).
-- **WithShellFlag(shellFlag string) *CMX**: Sets the shell flag (e.g., `-c`).
+- **WithEnvs(envs []string) *CMC**: Sets custom environment variables for the command.
+- **WithPath(path string) *CMC**: Sets the working path for the command.
+- **WithShellType(shellType string) *CMC**: Sets the shell type (e.g., `bash`).
+- **WithShellFlag(shellFlag string) *CMC**: Sets the shell flag (e.g., `-c`).
 
-### `Exec(cmx *CMX, name string, args ...string) ([]byte, error)`
+### `Exec(cmc *CMC, name string, args ...string) ([]byte, error)`
 
-Executes the command based on the configuration in the `CMX` instance.
+Executes the command based on the configuration in the `CMC` instance.
 
 #### Example:
 
 ```go
-cmx := osexec.NewCMX().
+cmc := osexec.NewCMC().
     WithEnvs([]string{"CUSTOM_ENV=1"}).
     WithPath("/path/to/dir").
     WithShellType("bash").
     WithShellFlag("-c")
 
-output, err := osexec.Exec(cmx, "echo", "Hello from CMX!")
+output, err := cmc.Exec("echo", "Hello from CMC!")
 if err != nil {
     fmt.Println("Error:", err)
 } else {

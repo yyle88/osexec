@@ -9,6 +9,13 @@ import (
 	"github.com/yyle88/runpath"
 )
 
+func TestExec(t *testing.T) {
+	data, err := osexec.Exec("go", "version")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}
+
 func TestExecInPath(t *testing.T) {
 	root := runpath.PARENT.Path()
 	data, err := osexec.ExecInPath(root, "ls", "-a")
