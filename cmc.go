@@ -6,6 +6,8 @@ import (
 	"strings"
 
 	"github.com/yyle88/erero"
+	"github.com/yyle88/tern"
+	"github.com/yyle88/tern/zerotern"
 )
 
 type CMC struct {
@@ -68,21 +70,19 @@ func (M *CMC) Exec(name string, args ...string) ([]byte, error) {
 	if strings.Contains(name, " ") {
 		return nil, erero.New("CAN NOT CONTAINS SPACE IN NAME STRING")
 	}
-	var cmd *exec.Cmd
-	if M.ShellType != "" {
-		if M.ShellFlag != "-c" { //这里暂不支持别的
-			return nil, erero.New("CAN NOT EXECUTE WITH WRONG SHELL FLAG")
-		}
+	if M.ShellType != "" && M.ShellFlag != "-c" { //这里暂不支持别的
+		return nil, erero.New("CAN NOT EXECUTE WITH WRONG SHELL FLAG")
+	}
+
+	cmd := tern.BFF(M.ShellType != "", func() *exec.Cmd {
 		sub := name + " " + strings.Join(args, " ")
-		cmd = exec.Command(M.ShellType, M.ShellFlag, sub)
-	} else {
-		cmd = exec.Command(name, args...)
-	}
-	if M.Path != "" {
-		cmd.Dir = M.Path
-	}
-	if len(M.Envs) > 0 {
-		cmd.Env = append(os.Environ(), M.Envs...)
-	}
+		return exec.Command(M.ShellType, M.ShellFlag, sub)
+	}, func() *exec.Cmd {
+		return exec.Command(name, args...)
+	})
+	cmd.Dir = zerotern.VV(M.Path, "") //这样目的在于提示 path 很有可能是空的
+	cmd.Env = tern.BF(len(M.Envs) > 0, func() []string {
+		return append(os.Environ(), M.Envs...)
+	})
 	return cmd.CombinedOutput()
 }
