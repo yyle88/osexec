@@ -1,142 +1,94 @@
+[![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yyle88/osexec/release.yml?branch=main&label=BUILD)](https://github.com/yyle88/osexec/actions/workflows/release.yml?query=branch%3Amain)
+[![GoDoc](https://pkg.go.dev/badge/github.com/yyle88/osexec)](https://pkg.go.dev/github.com/yyle88/osexec)
+[![Coverage Status](https://img.shields.io/coveralls/github/yyle88/osexec/master.svg)](https://coveralls.io/github/yyle88/osexec?branch=main)
+![Supported Go Versions](https://img.shields.io/badge/Go-1.22%2C%201.23-lightgrey.svg)
+[![GitHub Release](https://img.shields.io/github/release/yyle88/osexec.svg)](https://github.com/yyle88/osexec/releases)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yyle88/osexec)](https://goreportcard.com/report/github.com/yyle88/osexec)
+
 # osexec
+
 Simple utilities to use Golang's `os/exec` package.
 
 ## Features
 
-- **ExecInPath**: Execute commands in a specific path.
-- **ExecInEnvs**: Execute commands with a custom set of environment variables.
-- **ExecXshRun**: Execute commands using a shell with a specific shell type.
+- **Custom Execution Configurations**: Execute commands with customizable environment variables, working paths, and shell options.
 
 ## Installation
 
-To install `osexec`, use the following command:
+```bash  
+go get github.com/yyle88/osexec  
+```  
 
-```bash
-go get github.com/yyle88/osexec
-```
+## `CommandConfig` Structure and Methods
 
-## Functions
+`CommandConfig` structure provides a flexible way to configure and execute commands. You can set custom environment variables, directories, shell types, and debug options using a chainable interface.
 
-### `ExecInPath(path string, name string, args ...string) ([]byte, error)`
+### `NewCommandConfig() *CommandConfig`
 
-Executes a command in the specified path.
-
-#### Parameters:
-- `path`: The path where the command should be executed.
-- `name`: The name of the command to execute.
-- `args`: Arguments to pass to the command.
+Creates and returns a new `CommandConfig` instance.
 
 #### Example:
 
-```go
-output, err := osexec.ExecInPath("/path/to/dir", "echo", "Hello, World!")
-if err != nil {
-    fmt.Println("Error:", err)
-} else {
-    fmt.Println("Output:", string(output))
-}
-```
-
-### `ExecInEnvs(envs []string, name string, args ...string) ([]byte, error)`
-
-Executes a command with custom environment variables.
-
-#### Parameters:
-- `envs`: A list of environment variables to set for the command.
-- `name`: The name of the command to execute.
-- `args`: Arguments to pass to the command.
-
-#### Example:
-
-```go
-envs := []string{"CUSTOM_ENV=1"}
-output, err := osexec.ExecInEnvs(envs, "echo", "Custom Env Variable")
-if err != nil {
-    fmt.Println("Error:", err)
-} else {
-    fmt.Println("Output:", string(output))
-}
-```
-
-### `ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byte, error)`
-
-Executes a command using a shell (e.g., `bash`, `sh`) with a specific shell type and flags.
-
-#### Parameters:
-- `shellType`: The shell type to use (e.g., `"bash"`, `"sh"`).
-- `shellFlag`: The flag to pass to the shell (e.g., `"-c"`).
-- `name`: The name of the command to execute.
-- `args`: Arguments to pass to the command.
-
-#### Example:
-
-```go
-output, err := osexec.ExecXshRun("bash", "-c", "echo", "Shell-based Command")
-if err != nil {
-    fmt.Println("Error:", err)
-} else {
-    fmt.Println("Output:", string(output))
-}
-```
-
----
-
-## `CMC` Structure and Methods
-
-The `CMC` structure provides a flexible way to configure and execute commands. You can set custom environment variables, directories, shell types, and shell flags using a chainable interface.
-
-### `NewCMC() *CMC`
-
-Creates and returns a new `CMC` instance.
+```go  
+config := osexec.NewCommandConfig()
+```  
 
 ### Chainable Methods
 
-- **WithEnvs(envs []string) *CMC**: Sets custom environment variables for the command.
-- **WithPath(path string) *CMC**: Sets the working path for the command.
-- **WithShellType(shellType string) *CMC**: Sets the shell type (e.g., `bash`).
-- **WithShellFlag(shellFlag string) *CMC**: Sets the shell flag (e.g., `-c`).
-
-### `Exec(cmc *CMC, name string, args ...string) ([]byte, error)`
-
-Executes the command based on the configuration in the `CMC` instance.
+- **WithEnvs(envs []string) *CommandConfig**: Sets custom environment variables.
+- **WithPath(path string) *CommandConfig**: Sets the working path.
+- **WithShellType(shellType string) *CommandConfig**: Sets the shell type (e.g., `bash`).
+- **WithShellFlag(shellFlag string) *CommandConfig**: Sets the shell flag (e.g., `-c`).
+- **WithShell(shellType, shellFlag string) *CommandConfig**: Sets shell type and flag.
+- **WithBash() *CommandConfig**: Configures the command to use `bash -c`.
+- **WithZsh() *CommandConfig**: Configures the command to use `zsh -c`.
+- **WithSh() *CommandConfig**: Configures the command to use `sh -c`.
+- **WithDebugMode(debugMode bool) *CommandConfig**: Enables / disables debug mode.
 
 #### Example:
 
 ```go
-cmc := osexec.NewCMC().
-    WithEnvs([]string{"CUSTOM_ENV=1"}).
-    WithPath("/path/to/dir").
-    WithShellType("bash").
-    WithShellFlag("-c")
+package main
 
-output, err := cmc.Exec("echo", "Hello from CMC!")
-if err != nil {
-    fmt.Println("Error:", err)
-} else {
-    fmt.Println("Output:", string(output))
+import (
+	"fmt"
+	"github.com/yyle88/osexec"
+)
+
+func main() {
+	// Create a new CommandConfig instance and set the working directory and debug mode
+	config := osexec.NewCommandConfig().
+		WithPath("/path/to/directoryName").
+		WithDebugMode(true)
+
+	output, err := config.Exec("echo", "Hello, World!")
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println("Output:", string(output))
+	}
 }
 ```
-
-## Error Handling
-
-Each function in this package returns an error if the execution fails. Be sure to handle errors properly in your application.
-
----
-
-## Contribution
-
-Feel free to fork this repository, make improvements, and submit pull requests. Issues and feature requests are also welcome!
 
 ---
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+`osexec` is open-source and released under the MIT License. See the [LICENSE](LICENSE) file for more information.
 
 ---
 
-## Thank You
+## Support
 
-If you find this package valuable, give it a star on GitHub! Thank you!!!
+Welcome to contribute to this project by submitting pull requests or reporting issues.
 
----
+If you find this package helpful, give it a star on GitHub!
+
+**Thank you for your support!**
+
+**Happy Coding with `osexec`!** 🎉
+
+Give me stars. Thank you!!!
+
+## See stars
+[![see stars](https://starchart.cc/yyle88/osexec.svg?variant=adaptive)](https://starchart.cc/yyle88/osexec)

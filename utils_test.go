@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestSetEnableDebug(t *testing.T) {
+	SetEnableDebug(true)
+	require.True(t, enableDebug)
+}
+
 func TestNewCMC(t *testing.T) {
 	commandConfig := NewCMC()
 	commandConfig.WithShell("bash", "-c")
