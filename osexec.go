@@ -16,9 +16,12 @@ func Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY COMMAND NAME")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("CAN NOT CONTAINS SPACE IN NAME STRING")
+		return nil, erero.New("CAN NOT CONTAINS SPACE IN COMMAND NAME")
 	}
-	zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", sprintExecToBash(name, args...)))
+	if enableDebug {
+		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
+		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
+	}
 	cmd := exec.Command(name, args...)
 	return cmd.CombinedOutput()
 }
@@ -31,9 +34,12 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY COMMAND NAME")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("CAN NOT CONTAINS SPACE IN NAME STRING")
+		return nil, erero.New("CAN NOT CONTAINS SPACE IN COMMAND NAME")
 	}
-	zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_PATH:", zap.String("CMD", sprintExecInPath(path, name, args...)))
+	if enableDebug {
+		debugMessage := strings.TrimSpace(fmt.Sprintf("cd %s && %s", path, formatCommandMessage(name, args)))
+		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_PATH:", zap.String("CMD", debugMessage))
+	}
 	cmd := exec.Command(name, args...)
 	cmd.Dir = path
 	return cmd.CombinedOutput()
@@ -44,9 +50,12 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY COMMAND NAME")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("CAN NOT CONTAINS SPACE IN NAME STRING")
+		return nil, erero.New("CAN NOT CONTAINS SPACE IN COMMAND NAME")
 	}
-	zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", sprintExecInEnvs(envs, name, args...)))
+	if enableDebug {
+		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", strings.Join(envs, " "), formatCommandMessage(name, args)))
+		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", debugMessage))
+	}
 	cmd := exec.Command(name, args...)
 	cmd.Env = os.Environ() //这里没事是安全的
 	cmd.Env = append(cmd.Env, envs...)
@@ -58,32 +67,28 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY SHELL TYPE")
 	}
 	if shellFlag != "-c" { //这里虽然必然要填 -c 但是依然要作为参数，否则外部调用时就会很怪异
-		return nil, erero.New("CAN NOT EXECUTE WITH WRONG SHELL FLAG")
+		return nil, erero.New("CAN NOT EXECUTE WITH WRONG SHELL OPTIONS")
 	}
 	if name == "" {
 		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY COMMAND NAME")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("CAN NOT CONTAINS SPACE IN NAME STRING")
+		return nil, erero.New("CAN NOT CONTAINS SPACE IN COMMAND NAME")
 	}
-	zaplog.ZAPS.P1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", sprintExecXshRun(shellType, shellFlag, name, args...)))
-	sub := name + " " + strings.Join(args, " ")
-	cmd := exec.Command(shellType, "-c", sub)
+	if enableDebug {
+		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, escapeSingleQuotes(formatCommandMessage(name, args))))
+		zaplog.ZAPS.P1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
+	}
+	cmd := exec.Command(shellType, "-c", name+" "+strings.Join(args, " "))
 	return cmd.CombinedOutput()
 }
 
-func sprintExecInPath(path string, name string, args ...string) string {
-	return strings.TrimSpace(fmt.Sprintf("cd %s && %s", path, sprintExecToBash(name, args...)))
-}
-
-func sprintExecToBash(name string, args ...string) string {
+// 把命令和参数拼接为命令行字符串
+func formatCommandMessage(name string, args []string) string {
 	return strings.TrimSpace(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
 }
 
-func sprintExecInEnvs(envs []string, name string, args ...string) string {
-	return strings.TrimSpace(fmt.Sprintf("%s %s", strings.Join(envs, " "), sprintExecToBash(name, args...)))
-}
-
-func sprintExecXshRun(shellType, shellFlag string, name string, args ...string) string {
-	return strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, sprintExecToBash(name, args...)))
+// 把单引号转义为 '\”（shell 中安全嵌套单引号的方式）
+func escapeSingleQuotes(input string) string {
+	return strings.ReplaceAll(input, "'", `'\''`)
 }
