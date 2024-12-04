@@ -1,6 +1,7 @@
 package osexec_test
 
 import (
+	"os/exec"
 	"strings"
 	"testing"
 
@@ -39,6 +40,13 @@ func TestCommandConfig_ExecXshRun_WithBash(t *testing.T) {
 }
 
 func TestCommandConfig_ExecXshRun_WithZsh(t *testing.T) {
+	// 检测环境是否支持 zsh
+	path, err := exec.LookPath("zsh")
+	if err != nil { // 假如测试环境里没有 zsh 就会报错
+		t.Skip("zsh is not available on this system, skipping test case")
+	}
+	t.Log(path)
+
 	data, err := osexec.NewCommandConfig().WithZsh().Exec("echo", "$HOME")
 	require.NoError(t, err)
 	t.Log(string(data))
