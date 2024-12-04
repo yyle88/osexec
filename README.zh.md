@@ -2,6 +2,10 @@
 
 调用 Golang 的 `os/exec` 包的简单工具。
 
+## 英文文档
+
+[English README](README.md)
+
 ## 功能
 
 - **自定义执行配置**：支持通过自定义环境变量、工作路径和 Shell 选项来执行命令。

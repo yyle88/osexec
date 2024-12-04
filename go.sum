@@ -35,8 +35,8 @@ github.com/yyle88/runpath v1.0.22 h1:gcyaNMNZq7yjL2Xlwvs0W7BOkzn4VJTJqA8ko7CKhKg
 github.com/yyle88/runpath v1.0.22/go.mod h1:JRGxn/0Ytg6CvGoE2VrO74oX8Lu4jbOPZDKxr8tzPEg=
 github.com/yyle88/sure v0.0.32 h1:cUKZDMR2E5c1sc9f99JTZi3GBdBienU3lh3/O98l6/4=
 github.com/yyle88/sure v0.0.32/go.mod h1:29eZWpgHwkeK3bq8TL2Db7PP2Zi6JagGJd+gOAjcdjw=
-github.com/yyle88/syntaxgo v0.0.35 h1:jcDpBTkVehgaQq3LGOQD/jBFu7eauVn2rqc7qKCqzts=
-github.com/yyle88/syntaxgo v0.0.35/go.mod h1:blSLJ3XoI8KWT5FISdBTISi1cHElQxtBzZ2UaeDja9w=
+github.com/yyle88/syntaxgo v0.0.36 h1:tBUwonjoqRwP9mjysBC5C1rEIEVEupkwHZzbdHjJgFU=
+github.com/yyle88/syntaxgo v0.0.36/go.mod h1:cYNysHxNf58So2Ta4aslUdCvwTnPZj8RqbuNelvD55Q=
 github.com/yyle88/tern v0.0.3 h1:Ut5p1wPAVcreEkmzDp+IiteA3K2vnTeAYE1PyBLNgjU=
 github.com/yyle88/tern v0.0.3/go.mod h1:g9weyOMLtXYyt37EAshZPUTTHdH7WFauuxDi4oPr7/8=
 github.com/yyle88/zaplog v0.0.16 h1:ZCxQhq3+nWeWMAXIzeA1EA4exRq5Pn8pXTpEw1GjyD4=

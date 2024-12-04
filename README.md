@@ -9,6 +9,10 @@
 
 Simple utilities to use Golang's `os/exec` package.
 
+## CHINESE README
+
+[中文说明](README.zh.md)
+
 ## Features
 
 - **Custom Execution Configurations**: Execute commands with customizable environment variables, working paths, and shell options.
