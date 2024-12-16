@@ -12,10 +12,10 @@ func NewCMC() *CMC {
 	return NewCommandConfig()
 }
 
-var enableDebug = true
+var debugModeOpen = true
 
-func SetEnableDebug(enable bool) {
-	enableDebug = enable
+func SetDebugMode(enable bool) {
+	debugModeOpen = enable
 }
 
 func showMessage(message string) {

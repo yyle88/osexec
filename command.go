@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/yyle88/erero"
+	"github.com/yyle88/printgo"
 	"github.com/yyle88/tern"
 	"github.com/yyle88/zaplog"
 	"go.uber.org/zap"
@@ -26,7 +27,7 @@ type CommandConfig struct {
 // NewCommandConfig 创建并返回一个新的 CommandConfig 实例。
 func NewCommandConfig() *CommandConfig {
 	return &CommandConfig{
-		DebugMode: enableDebug, // Initial value is consistent with the enableDebug variable. // 初始值与 enableDebug 变量保持一致。
+		DebugMode: debugModeOpen, // Initial value is consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 变量保持一致。
 	}
 }
 
@@ -95,16 +96,23 @@ func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 // Exec 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
 func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 	if name == "" {
-		return nil, erero.New("CAN NOT EXECUTE WITH EMPTY COMMAND NAME")
+		return nil, erero.New("can-not-execute-with-empty-command-name")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("CAN NOT CONTAINS SPACE IN COMMAND NAME")
+		return nil, erero.New("can-not-contains-space-in-command-name")
 	}
-	if c.ShellType != "" && c.ShellFlag != "-c" {
-		return nil, erero.New("CAN NOT EXECUTE WITH WRONG SHELL OPTIONS")
+	if c.ShellFlag != "" {
+		if c.ShellType == "" {
+			return nil, erero.New("can-not-execute-with-wrong-shell-command")
+		}
+	}
+	if c.ShellType != "" {
+		if c.ShellFlag != "-c" {
+			return nil, erero.New("can-not-execute-with-wrong-shell-options")
+		}
 	}
 	if c.DebugMode {
-		debugMessage := c.formatCommandLine(name, args)
+		debugMessage := c.makeCommandMessage(name, args)
 		showMessage(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
@@ -119,12 +127,12 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 	cmd.Env = tern.BF(len(c.Envs) > 0, func() []string {
 		return append(os.Environ(), c.Envs...)
 	})
-	return c.warpOutput(cmd.CombinedOutput())
+	return c.warpCommandOutput(cmd.CombinedOutput())
 }
 
-// warpOutput processes the output and error from the command execution, adding debug information if necessary.
-// warpOutput 处理命令执行的输出和错误，并在需要时添加调试信息。
-func (c *CommandConfig) warpOutput(output []byte, erx error) ([]byte, error) {
+// warpCommandOutput processes the output and error from the command execution, adding debug information if necessary.
+// warpCommandOutput 处理命令执行的输出和错误，并在需要时添加调试信息。
+func (c *CommandConfig) warpCommandOutput(output []byte, erx error) ([]byte, error) {
 	if erx != nil {
 		if c.DebugMode {
 			if len(output) > 0 {
@@ -138,20 +146,20 @@ func (c *CommandConfig) warpOutput(output []byte, erx error) ([]byte, error) {
 	return output, nil
 }
 
-// formatCommandLine constructs a command-line string based on the CommandConfig and given command name and arguments.
-// formatCommandLine 根据 CommandConfig 和指定的命令名称及参数构造命令行字符串。
-func (c *CommandConfig) formatCommandLine(name string, args []string) string {
-	var stb strings.Builder
+// makeCommandMessage constructs a command-line string based on the CommandConfig and given command name and arguments.
+// makeCommandMessage 根据 CommandConfig 和指定的命令名称及参数构造命令行字符串。
+func (c *CommandConfig) makeCommandMessage(name string, args []string) string {
+	var pts = printgo.NewPTS()
 	if c.Path != "" {
-		stb.WriteString(fmt.Sprintf("cd %s && ", c.Path))
+		pts.WriteString(fmt.Sprintf("cd %s && ", c.Path))
 	}
 	if len(c.Envs) > 0 {
-		stb.WriteString(fmt.Sprintf("%s ", strings.Join(c.Envs, " ")))
+		pts.WriteString(fmt.Sprintf("%s ", strings.Join(c.Envs, " ")))
 	}
 	if c.ShellType != "" && c.ShellFlag != "" {
-		stb.WriteString(fmt.Sprintf("%s %s '%s'", c.ShellType, c.ShellFlag, escapeSingleQuotes(formatCommandMessage(name, args))))
+		pts.WriteString(fmt.Sprintf("%s %s '%s'", c.ShellType, c.ShellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
 	} else {
-		stb.WriteString(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
+		pts.WriteString(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
 	}
-	return stb.String()
+	return pts.String()
 }
