@@ -1,12 +1,17 @@
 package osexec
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os"
 	"os/exec"
 	"strings"
+	"sync"
 
 	"github.com/yyle88/erero"
+	"github.com/yyle88/eroticgo"
+	"github.com/yyle88/osexec/internal/utils"
 	"github.com/yyle88/printgo"
 	"github.com/yyle88/tern"
 	"github.com/yyle88/zaplog"
@@ -95,27 +100,40 @@ func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 // Exec executes a shell command with the specified name and arguments, using the CommandConfig configuration.
 // Exec 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
 func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
+	if err := c.validateConfig(name, args); err != nil {
+		return nil, erero.Ero(err)
+	}
+	command := c.prepareCommand(name, args)
+	output, err := command.CombinedOutput()
+	return utils.WarpMessage(output, err, c.DebugMode)
+}
+
+func (c *CommandConfig) validateConfig(name string, args []string) error {
 	if name == "" {
-		return nil, erero.New("can-not-execute-with-empty-command-name")
+		return erero.New("can-not-execute-with-empty-command-name")
 	}
 	if strings.Contains(name, " ") {
-		return nil, erero.New("can-not-contains-space-in-command-name")
+		return erero.New("can-not-contains-space-in-command-name")
 	}
 	if c.ShellFlag != "" {
 		if c.ShellType == "" {
-			return nil, erero.New("can-not-execute-with-wrong-shell-command")
+			return erero.New("can-not-execute-with-wrong-shell-command")
 		}
 	}
 	if c.ShellType != "" {
 		if c.ShellFlag != "-c" {
-			return nil, erero.New("can-not-execute-with-wrong-shell-options")
+			return erero.New("can-not-execute-with-wrong-shell-options")
 		}
 	}
 	if c.DebugMode {
 		debugMessage := c.makeCommandMessage(name, args)
-		showMessage(debugMessage)
+		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
+	return nil
+}
+
+func (c *CommandConfig) prepareCommand(name string, args []string) *exec.Cmd {
 	cmd := tern.BFF(c.ShellType != "",
 		func() *exec.Cmd {
 			return exec.Command(c.ShellType, c.ShellFlag, name+" "+strings.Join(args, " "))
@@ -127,23 +145,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 	cmd.Env = tern.BF(len(c.Envs) > 0, func() []string {
 		return append(os.Environ(), c.Envs...)
 	})
-	return c.warpCommandOutput(cmd.CombinedOutput())
-}
-
-// warpCommandOutput processes the output and error from the command execution, adding debug information if necessary.
-// warpCommandOutput 处理命令执行的输出和错误，并在需要时添加调试信息。
-func (c *CommandConfig) warpCommandOutput(output []byte, erx error) ([]byte, error) {
-	if erx != nil {
-		if c.DebugMode {
-			if len(output) > 0 {
-				showWarning(string(output))
-			} else {
-				showWarning(erx.Error())
-			}
-		}
-		return output, erero.Wro(erx)
-	}
-	return output, nil
+	return cmd
 }
 
 // makeCommandMessage constructs a command-line string based on the CommandConfig and given command name and arguments.
@@ -162,4 +164,68 @@ func (c *CommandConfig) makeCommandMessage(name string, args []string) string {
 		pts.WriteString(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
 	}
 	return pts.String()
+}
+
+func (c *CommandConfig) StreamExec(name string, args ...string) ([]byte, error) {
+	if err := c.validateConfig(name, args); err != nil {
+		return nil, erero.Ero(err)
+	}
+	command := c.prepareCommand(name, args)
+
+	stdoutPipe, err := command.StdoutPipe()
+	if err != nil {
+		return nil, erero.Wro(err)
+	}
+
+	stderrPipe, err := command.StderrPipe()
+	if err != nil {
+		return nil, erero.Wro(err)
+	}
+
+	stdoutReader := bufio.NewReader(stdoutPipe)
+	stderrReader := bufio.NewReader(stderrPipe)
+	if err := command.Start(); err != nil {
+		return nil, erero.Wro(err)
+	}
+
+	wg := sync.WaitGroup{}
+	wg.Add(2)
+	stderrBuffer := printgo.NewPTX()
+	go func() {
+		defer wg.Done()
+		c.readPipe(stderrReader, stderrBuffer, "REASON", eroticgo.RED)
+	}()
+	stdoutBuffer := printgo.NewPTX()
+	go func() {
+		defer wg.Done()
+		c.readPipe(stdoutReader, stdoutBuffer, "OUTPUT", eroticgo.GREEN)
+	}()
+	wg.Wait()
+
+	if stderrBuffer.Len() > 0 {
+		return utils.WarpMessage(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String()), c.DebugMode)
+	} else {
+		return utils.WarpMessage(stdoutBuffer.Bytes(), nil, c.DebugMode)
+	}
+}
+
+func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMessage string, erotic eroticgo.COLOR) {
+	for {
+		streamLine, _, err := reader.ReadLine()
+
+		if c.DebugMode {
+			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
+		}
+
+		if err != nil {
+			if err == io.EOF {
+				ptx.Write(streamLine)
+				return
+			}
+			panic(erero.Wro(err)) //panic: 读取结果出错很罕见
+		} else {
+			ptx.Write(streamLine)
+			ptx.Println()
+		}
+	}
 }

@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/yyle88/erero"
+	"github.com/yyle88/osexec/internal/utils"
 	"github.com/yyle88/zaplog"
 	"go.uber.org/zap"
 )
@@ -22,11 +23,12 @@ func Exec(name string, args ...string) ([]byte, error) {
 	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
-		showMessage(debugMessage)
+		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
-	return warpCommandOutput(command.CombinedOutput())
+	output, err := command.CombinedOutput()
+	return utils.WarpMessage(output, err, debugModeOpen)
 }
 
 // ExecInPath executes a command in a specified directory.
@@ -43,12 +45,13 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("cd %s && %s", path, makeCommandMessage(name, args)))
-		showMessage(debugMessage)
+		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_PATH:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
 	command.Dir = path
-	return warpCommandOutput(command.CombinedOutput())
+	output, err := command.CombinedOutput()
+	return utils.WarpMessage(output, err, debugModeOpen)
 }
 
 // ExecInEnvs executes a command with custom environment variables.
@@ -62,13 +65,14 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", strings.Join(envs, " "), makeCommandMessage(name, args)))
-		showMessage(debugMessage)
+		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
 	command.Env = os.Environ() // Add custom environment variables
 	command.Env = append(command.Env, envs...)
-	return warpCommandOutput(command.CombinedOutput())
+	output, err := command.CombinedOutput()
+	return utils.WarpMessage(output, err, debugModeOpen)
 }
 
 // ExecXshRun executes a command using a specific shell type and shell flag.
@@ -88,27 +92,12 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
-		showMessage(debugMessage)
+		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.P1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(shellType, "-c", name+" "+strings.Join(args, " "))
-	return warpCommandOutput(command.CombinedOutput())
-}
-
-// warpCommandOutput handles the output of the executed command and wraps errors if they occur.
-// warpCommandOutput 处理执行命令的输出，并在出现错误时封装错误信息。
-func warpCommandOutput(output []byte, erx error) ([]byte, error) {
-	if erx != nil {
-		if debugModeOpen {
-			if len(output) > 0 {
-				showWarning(string(output))
-			} else {
-				showWarning(erx.Error())
-			}
-		}
-		return output, erero.Wro(erx)
-	}
-	return output, nil
+	output, err := command.CombinedOutput()
+	return utils.WarpMessage(output, err, debugModeOpen)
 }
 
 // makeCommandMessage formats a command name and its arguments into a single command-line string.
