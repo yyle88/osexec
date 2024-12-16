@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/yyle88/done"
 	"github.com/yyle88/erero"
 	"github.com/yyle88/eroticgo"
 	"github.com/yyle88/osexec/internal/utils"
@@ -104,8 +105,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	output, err := command.CombinedOutput()
-	return utils.WarpMessage(output, err, c.DebugMode)
+	return utils.WarpMessage(done.VAE(command.CombinedOutput()), c.DebugMode)
 }
 
 func (c *CommandConfig) validateConfig(name string, args []string) error {
@@ -203,9 +203,9 @@ func (c *CommandConfig) StreamExec(name string, args ...string) ([]byte, error) 
 	wg.Wait()
 
 	if stderrBuffer.Len() > 0 {
-		return utils.WarpMessage(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String()), c.DebugMode)
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.DebugMode)
 	} else {
-		return utils.WarpMessage(stdoutBuffer.Bytes(), nil, c.DebugMode)
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.DebugMode)
 	}
 }
 

@@ -4,6 +4,7 @@ go 1.22.8
 
 require (
 	github.com/stretchr/testify v1.10.0
+	github.com/yyle88/done v1.0.18
 	github.com/yyle88/erero v1.0.14
 	github.com/yyle88/eroticgo v0.0.2
 	github.com/yyle88/printgo v1.0.1
@@ -22,7 +23,6 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
-	github.com/yyle88/done v1.0.18 // indirect
 	github.com/yyle88/formatgo v1.0.21 // indirect
 	github.com/yyle88/must v0.0.10 // indirect
 	github.com/yyle88/mutexmap v1.0.8 // indirect

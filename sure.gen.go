@@ -48,6 +48,11 @@ func (T *CommandConfig88Must) Exec(name string, args ...string) (res []byte) {
 	sure.Must(err1)
 	return res
 }
+func (T *CommandConfig88Must) StreamExec(name string, args ...string) (res []byte) {
+	res, err1 := T.c.StreamExec(name, args...)
+	sure.Must(err1)
+	return res
+}
 
 type CommandConfig88Soft struct{ c *CommandConfig }
 
@@ -95,6 +100,11 @@ func (T *CommandConfig88Soft) Exec(name string, args ...string) (res []byte) {
 	sure.Soft(err1)
 	return res
 }
+func (T *CommandConfig88Soft) StreamExec(name string, args ...string) (res []byte) {
+	res, err1 := T.c.StreamExec(name, args...)
+	sure.Soft(err1)
+	return res
+}
 
 type CommandConfig88Omit struct{ c *CommandConfig }
 
@@ -139,6 +149,11 @@ func (T *CommandConfig88Omit) WithDebugMode(debugMode bool) (res *CommandConfig)
 }
 func (T *CommandConfig88Omit) Exec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.Exec(name, args...)
+	sure.Omit(err1)
+	return res
+}
+func (T *CommandConfig88Omit) StreamExec(name string, args ...string) (res []byte) {
+	res, err1 := T.c.StreamExec(name, args...)
 	sure.Omit(err1)
 	return res
 }

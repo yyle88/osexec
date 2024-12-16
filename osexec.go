@@ -6,6 +6,7 @@ import (
 	"os/exec"
 	"strings"
 
+	"github.com/yyle88/done"
 	"github.com/yyle88/erero"
 	"github.com/yyle88/osexec/internal/utils"
 	"github.com/yyle88/zaplog"
@@ -27,8 +28,7 @@ func Exec(name string, args ...string) ([]byte, error) {
 		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
-	output, err := command.CombinedOutput()
-	return utils.WarpMessage(output, err, debugModeOpen)
+	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecInPath executes a command in a specified directory.
@@ -50,8 +50,7 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 	}
 	command := exec.Command(name, args...)
 	command.Dir = path
-	output, err := command.CombinedOutput()
-	return utils.WarpMessage(output, err, debugModeOpen)
+	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecInEnvs executes a command with custom environment variables.
@@ -71,8 +70,7 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 	command := exec.Command(name, args...)
 	command.Env = os.Environ() // Add custom environment variables
 	command.Env = append(command.Env, envs...)
-	output, err := command.CombinedOutput()
-	return utils.WarpMessage(output, err, debugModeOpen)
+	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecXshRun executes a command using a specific shell type and shell flag.
@@ -96,8 +94,7 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 		zaplog.ZAPS.P1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(shellType, "-c", name+" "+strings.Join(args, " "))
-	output, err := command.CombinedOutput()
-	return utils.WarpMessage(output, err, debugModeOpen)
+	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // makeCommandMessage formats a command name and its arguments into a single command-line string.

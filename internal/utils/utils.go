@@ -3,6 +3,7 @@ package utils
 import (
 	"fmt"
 
+	"github.com/yyle88/done"
 	"github.com/yyle88/erero"
 	"github.com/yyle88/eroticgo"
 )
@@ -27,21 +28,21 @@ func ShowWarning(message string) {
 
 // WarpMessage handles the output of the executed command and wraps errors.
 // WarpMessage 处理执行命令的输出，并在出现错误时封装错误信息。
-func WarpMessage(output []byte, err error, debugMode bool) ([]byte, error) {
-	if err != nil {
+func WarpMessage(a *done.Vae[byte], debugMode bool) ([]byte, error) {
+	if a.E != nil {
 		if debugMode {
-			if len(output) > 0 {
-				ShowWarning(string(output))
+			if len(a.V) > 0 {
+				ShowWarning(string(a.V))
 			} else {
-				ShowWarning(err.Error())
+				ShowWarning(a.E.Error())
 			}
 		}
-		return output, erero.Wro(err)
+		return a.V, erero.Wro(a.E)
 	}
 	if debugMode {
-		if len(output) > 0 {
-			ShowMessage(string(output))
+		if len(a.V) > 0 {
+			ShowMessage(string(a.V))
 		}
 	}
-	return output, nil
+	return a.V, nil
 }
