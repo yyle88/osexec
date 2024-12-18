@@ -26,7 +26,8 @@ type CommandConfig struct {
 	Path      string   // Optional execution path. // 填写可选的执行路径。
 	ShellType string   // Optional type of shell to use, e.g., bash, zsh. // 填写可选的 shell 类型，例如 bash，zsh。
 	ShellFlag string   // Optional shell flag, e.g., "-c". // 填写可选的 Shell 参数，例如 "-c"。
-	DebugMode bool     // enable debug mode. // 是否启用调试模式。
+	DebugMode bool     // enable debug mode. // 是否启用调试模式，即打印调试的日志。
+	MatchPipe func(line string) bool
 }
 
 // NewCommandConfig creates and returns a new CommandConfig instance.
@@ -95,6 +96,11 @@ func (c *CommandConfig) WithSh() *CommandConfig {
 // WithDebugMode 设置 CommandConfig 的调试模式并返回更新后的实例。
 func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 	c.DebugMode = debugMode
+	return c
+}
+
+func (c *CommandConfig) WithMatchPipe(matchPipe func(line string) bool) *CommandConfig {
+	c.MatchPipe = matchPipe
 	return c
 }
 
@@ -194,17 +200,27 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 
 	wg := sync.WaitGroup{}
 	wg.Add(2)
-	stderrBuffer := printgo.NewPTX()
+	var errMatch = false
+	var stderrBuffer = printgo.NewPTX()
 	go func() {
 		defer wg.Done()
-		c.readPipe(stderrReader, stderrBuffer, "REASON", eroticgo.RED)
+		errMatch = c.readPipe(stderrReader, stderrBuffer, "REASON", eroticgo.RED)
 	}()
-	stdoutBuffer := printgo.NewPTX()
+	var outMatch = false
+	var stdoutBuffer = printgo.NewPTX()
 	go func() {
 		defer wg.Done()
-		c.readPipe(stdoutReader, stdoutBuffer, "OUTPUT", eroticgo.GREEN)
+		outMatch = c.readPipe(stdoutReader, stdoutBuffer, "OUTPUT", eroticgo.GREEN)
 	}()
 	wg.Wait()
+
+	if outMatch {
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.DebugMode)
+	}
+
+	if errMatch { //比如 "go: upgraded github.com/xx/xx vxx => vxx" 这就不算错误，而是正确的
+		return utils.WarpMessage(done.VAE(stderrBuffer.Bytes(), nil), c.DebugMode)
+	}
 
 	if stderrBuffer.Len() > 0 {
 		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.DebugMode)
@@ -213,7 +229,7 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	}
 }
 
-func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMessage string, erotic eroticgo.COLOR) {
+func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMessage string, erotic eroticgo.COLOR) (matched bool) {
 	for {
 		streamLine, _, err := reader.ReadLine()
 
@@ -221,10 +237,14 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
 		}
 
+		if !matched && c.MatchPipe != nil {
+			matched = c.MatchPipe(string(streamLine))
+		}
+
 		if err != nil {
 			if err == io.EOF {
 				ptx.Write(streamLine)
-				return
+				return matched
 			}
 			panic(erero.Wro(err)) //panic: 读取结果出错很罕见
 		} else {
@@ -232,4 +252,5 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 			ptx.Println()
 		}
 	}
+	return matched
 }
