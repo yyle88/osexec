@@ -167,6 +167,10 @@ func (c *CommandConfig) makeCommandMessage(name string, args []string) string {
 }
 
 func (c *CommandConfig) StreamExec(name string, args ...string) ([]byte, error) {
+	return c.ExecInPipe(name, args...)
+}
+
+func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) {
 	if err := c.validateConfig(name, args); err != nil {
 		return nil, erero.Ero(err)
 	}
