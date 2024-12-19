@@ -252,5 +252,4 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 			ptx.Println()
 		}
 	}
-	return matched
 }
