@@ -28,6 +28,7 @@ type CommandConfig struct {
 	ShellFlag string   // Optional shell flag, e.g., "-c". // 填写可选的 Shell 参数，例如 "-c"。
 	DebugMode bool     // enable debug mode. // 是否启用调试模式，即打印调试的日志。
 	MatchPipe func(line string) bool
+	MatchMore bool
 }
 
 // NewCommandConfig creates and returns a new CommandConfig instance.
@@ -101,6 +102,11 @@ func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 
 func (c *CommandConfig) WithMatchPipe(matchPipe func(line string) bool) *CommandConfig {
 	c.MatchPipe = matchPipe
+	return c
+}
+
+func (c *CommandConfig) WithMatchMore(matchMore bool) *CommandConfig {
+	c.MatchMore = matchMore
 	return c
 }
 
@@ -237,8 +243,10 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
 		}
 
-		if !matched && c.MatchPipe != nil {
-			matched = c.MatchPipe(string(streamLine))
+		if (c.MatchMore || !matched) && c.MatchPipe != nil {
+			if c.MatchPipe(string(streamLine)) {
+				matched = true
+			}
 		}
 
 		if err != nil {
