@@ -85,9 +85,6 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 	if name == "" {
 		return nil, erero.New("can-not-execute-with-empty-command-name")
 	}
-	if strings.Contains(name, " ") {
-		return nil, erero.New("can-not-contains-space-in-command-name")
-	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
 		utils.ShowCommand(debugMessage)

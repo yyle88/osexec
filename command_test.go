@@ -39,6 +39,13 @@ func TestCommandConfig_ExecXshRun_WithBash(t *testing.T) {
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 }
 
+func TestCommandConfig_ExecXshRun_WithBash2(t *testing.T) {
+	data, err := osexec.NewCommandConfig().WithBash().Exec("echo $HOME")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}
+
 func TestCommandConfig_ExecXshRun_WithZsh(t *testing.T) {
 	// 检测环境是否支持 zsh
 	path, err := exec.LookPath("zsh")
@@ -54,7 +61,7 @@ func TestCommandConfig_ExecXshRun_WithZsh(t *testing.T) {
 }
 
 func TestCommandConfig_ExecXshRun_WithSh(t *testing.T) {
-	data, err := osexec.NewCommandConfig().WithDebugMode(false).WithSh().Exec("echo", "$HOME")
+	data, err := osexec.NewCommandConfig().WithDebugMode(false).WithSh().Exec("echo $HOME")
 	require.NoError(t, err)
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))

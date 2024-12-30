@@ -37,3 +37,10 @@ func TestExecXshRun(t *testing.T) {
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 }
+
+func TestExecXshRun1(t *testing.T) {
+	data, err := osexec.ExecXshRun("bash", "-c", "echo $HOME")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}

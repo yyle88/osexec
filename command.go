@@ -128,8 +128,10 @@ func (c *CommandConfig) validateConfig(name string, args []string) error {
 	if name == "" {
 		return erero.New("can-not-execute-with-empty-command-name")
 	}
-	if strings.Contains(name, " ") {
-		return erero.New("can-not-contains-space-in-command-name")
+	if c.ShellFlag == "" && c.ShellType == "" {
+		if strings.Contains(name, " ") {
+			return erero.New("can-not-contains-space-in-command-name")
+		}
 	}
 	if c.ShellFlag != "" {
 		if c.ShellType == "" {
