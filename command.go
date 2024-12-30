@@ -100,6 +100,10 @@ func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 	return c
 }
 
+func (c *CommandConfig) WithDebug() *CommandConfig {
+	return c.WithDebugMode(true)
+}
+
 func (c *CommandConfig) WithMatchPipe(matchPipe func(line string) bool) *CommandConfig {
 	c.MatchPipe = matchPipe
 	return c

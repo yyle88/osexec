@@ -12,7 +12,7 @@ func NewOsCommand() *OsCommand {
 	return NewCommandConfig()
 }
 
-var debugModeOpen = true
+var debugModeOpen = false
 
 func SetDebugMode(enable bool) {
 	debugModeOpen = enable
