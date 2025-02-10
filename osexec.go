@@ -25,7 +25,7 @@ func Exec(name string, args ...string) ([]byte, error) {
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
 		utils.ShowCommand(debugMessage)
-		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
+		zaplog.ZAPS.Skip1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
 	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
@@ -46,7 +46,7 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("cd %s && %s", path, makeCommandMessage(name, args)))
 		utils.ShowCommand(debugMessage)
-		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_PATH:", zap.String("CMD", debugMessage))
+		zaplog.ZAPS.Skip1.LOG.Debug("EXEC_IN_PATH:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
 	command.Dir = path
@@ -65,7 +65,7 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s", strings.Join(envs, " "), makeCommandMessage(name, args)))
 		utils.ShowCommand(debugMessage)
-		zaplog.ZAPS.P1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", debugMessage))
+		zaplog.ZAPS.Skip1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
 	command.Env = os.Environ() // Add custom environment variables
@@ -88,7 +88,7 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
 		utils.ShowCommand(debugMessage)
-		zaplog.ZAPS.P1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
+		zaplog.ZAPS.Skip1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(shellType, "-c", name+" "+strings.Join(args, " "))
 	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)

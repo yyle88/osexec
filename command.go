@@ -146,7 +146,7 @@ func (c *CommandConfig) validateConfig(name string, args []string) error {
 	if c.DebugMode {
 		debugMessage := c.makeCommandMessage(name, args)
 		utils.ShowCommand(debugMessage)
-		zaplog.ZAPS.P1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
+		zaplog.ZAPS.Skip1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
 	return nil
 }
