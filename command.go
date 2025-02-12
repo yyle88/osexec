@@ -267,3 +267,11 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 		}
 	}
 }
+
+// ShallowClone creates a shallow copy of the CommandConfig instance.
+// ShallowClone 拷贝个新的 CommandConfig 实例，以便于实现总配置和子配置分隔.
+func (c *CommandConfig) ShallowClone() *CommandConfig {
+	newConfig := new(CommandConfig)
+	*newConfig = *c
+	return newConfig
+}
