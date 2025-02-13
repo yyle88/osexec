@@ -12,6 +12,12 @@ func NewOsCommand() *OsCommand {
 	return NewCommandConfig()
 }
 
+type ExecConfig = CommandConfig
+
+func NewExecConfig() *ExecConfig {
+	return NewCommandConfig()
+}
+
 var debugModeOpen = false
 
 func SetDebugMode(enable bool) {
