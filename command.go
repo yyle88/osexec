@@ -100,15 +100,21 @@ func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
 	return c
 }
 
+// WithDebug sets the debug mode to true for CommandConfig and returns the updated instance.
+// WithDebug 将 CommandConfig 的调试模式设置为 true 并返回更新后的实例。
 func (c *CommandConfig) WithDebug() *CommandConfig {
 	return c.WithDebugMode(true)
 }
 
+// WithMatchPipe sets the match pipe function for CommandConfig and returns the updated instance.
+// WithMatchPipe 设置 CommandConfig 的匹配管道函数并返回更新后的实例。
 func (c *CommandConfig) WithMatchPipe(matchPipe func(line string) bool) *CommandConfig {
 	c.MatchPipe = matchPipe
 	return c
 }
 
+// WithMatchMore sets the match more flag for CommandConfig and returns the updated instance.
+// WithMatchMore 设置 CommandConfig 的匹配更多标志并返回更新后的实例。
 func (c *CommandConfig) WithMatchMore(matchMore bool) *CommandConfig {
 	c.MatchMore = matchMore
 	return c
@@ -184,10 +190,14 @@ func (c *CommandConfig) makeCommandMessage(name string, args []string) string {
 	return pts.String()
 }
 
+// StreamExec executes a shell command with the specified name and arguments, using the CommandConfig configuration, and returns the output as a byte slice.
+// StreamExec 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令，并返回输出的字节切片。
 func (c *CommandConfig) StreamExec(name string, args ...string) ([]byte, error) {
 	return c.ExecInPipe(name, args...)
 }
 
+// ExecInPipe executes a shell command with the specified name and arguments, using the CommandConfig configuration, and returns the output as a byte slice.
+// ExecInPipe 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令，并返回输出的字节切片。
 func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) {
 	if err := c.validateConfig(name, args); err != nil {
 		return nil, erero.Ero(err)
@@ -241,6 +251,8 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	}
 }
 
+// readPipe reads from the provided reader and writes to the provided PTX buffer, using the specified debug message and colors.
+// readPipe 从提供的 reader 读取数据并写入提供的 PTX 缓冲区，使用指定的调试消息和颜色。
 func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMessage string, erotic eroticgo.COLOR) (matched bool) {
 	for {
 		streamLine, _, err := reader.ReadLine()
@@ -274,4 +286,12 @@ func (c *CommandConfig) ShallowClone() *CommandConfig {
 	newConfig := new(CommandConfig)
 	*newConfig = *c
 	return newConfig
+}
+
+// GetSubClone creates a shallow copy of the CommandConfig instance with a new path and returns the updated instance.
+// GetSubClone 创建一个带有新路径的 CommandConfig 实例的浅拷贝并返回更新后的实例。
+func (c *CommandConfig) GetSubClone(path string) *CommandConfig {
+	newConfig := new(CommandConfig)
+	*newConfig = *c
+	return newConfig.WithPath(path)
 }

@@ -70,6 +70,14 @@ func (T *CommandConfig88Must) ExecInPipe(name string, args ...string) (res []byt
 	sure.Must(err1)
 	return res
 }
+func (T *CommandConfig88Must) ShallowClone() (res *CommandConfig) {
+	res = T.c.ShallowClone()
+	return res
+}
+func (T *CommandConfig88Must) GetSubClone(path string) (res *CommandConfig) {
+	res = T.c.GetSubClone(path)
+	return res
+}
 
 type CommandConfig88Soft struct{ c *CommandConfig }
 
@@ -139,6 +147,14 @@ func (T *CommandConfig88Soft) ExecInPipe(name string, args ...string) (res []byt
 	sure.Soft(err1)
 	return res
 }
+func (T *CommandConfig88Soft) ShallowClone() (res *CommandConfig) {
+	res = T.c.ShallowClone()
+	return res
+}
+func (T *CommandConfig88Soft) GetSubClone(path string) (res *CommandConfig) {
+	res = T.c.GetSubClone(path)
+	return res
+}
 
 type CommandConfig88Omit struct{ c *CommandConfig }
 
@@ -206,5 +222,13 @@ func (T *CommandConfig88Omit) StreamExec(name string, args ...string) (res []byt
 func (T *CommandConfig88Omit) ExecInPipe(name string, args ...string) (res []byte) {
 	res, err1 := T.c.ExecInPipe(name, args...)
 	sure.Omit(err1)
+	return res
+}
+func (T *CommandConfig88Omit) ShallowClone() (res *CommandConfig) {
+	res = T.c.ShallowClone()
+	return res
+}
+func (T *CommandConfig88Omit) GetSubClone(path string) (res *CommandConfig) {
+	res = T.c.GetSubClone(path)
 	return res
 }

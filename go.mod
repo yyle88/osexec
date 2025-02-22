@@ -4,15 +4,15 @@ go 1.22.8
 
 require (
 	github.com/stretchr/testify v1.10.0
-	github.com/yyle88/done v1.0.21
-	github.com/yyle88/erero v1.0.17
-	github.com/yyle88/eroticgo v0.0.2
+	github.com/yyle88/done v1.0.22
+	github.com/yyle88/erero v1.0.18
+	github.com/yyle88/eroticgo v0.0.3
 	github.com/yyle88/printgo v1.0.2
 	github.com/yyle88/runpath v1.0.23
 	github.com/yyle88/sure v0.0.36
 	github.com/yyle88/syntaxgo v0.0.44
 	github.com/yyle88/tern v0.0.5
-	github.com/yyle88/zaplog v0.0.19
+	github.com/yyle88/zaplog v0.0.20
 	go.uber.org/zap v1.27.0
 )
 
