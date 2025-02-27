@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"os/exec"
+	"slices"
 	"strings"
 	"sync"
 
@@ -285,13 +286,12 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 func (c *CommandConfig) ShallowClone() *CommandConfig {
 	newConfig := new(CommandConfig)
 	*newConfig = *c
+	newConfig.Envs = slices.Clone(c.Envs) //这里为了避免踩内存还是得拷贝一份
 	return newConfig
 }
 
 // GetSubClone creates a shallow copy of the CommandConfig instance with a new path and returns the updated instance.
 // GetSubClone 创建一个带有新路径的 CommandConfig 实例的浅拷贝并返回更新后的实例。
 func (c *CommandConfig) GetSubClone(path string) *CommandConfig {
-	newConfig := new(CommandConfig)
-	*newConfig = *c
-	return newConfig.WithPath(path)
+	return c.ShallowClone().WithPath(path)
 }
