@@ -2,7 +2,6 @@ package osexec
 
 import (
 	"bufio"
-	"fmt"
 	"io"
 	"os"
 	"os/exec"
@@ -178,15 +177,15 @@ func (c *CommandConfig) prepareCommand(name string, args []string) *exec.Cmd {
 func (c *CommandConfig) makeCommandMessage(name string, args []string) string {
 	var pts = printgo.NewPTS()
 	if c.Path != "" {
-		pts.WriteString(fmt.Sprintf("cd %s && ", c.Path))
+		pts.Fprintf("cd %s && ", c.Path)
 	}
 	if len(c.Envs) > 0 {
-		pts.WriteString(fmt.Sprintf("%s ", strings.Join(c.Envs, " ")))
+		pts.Fprintf("%s ", strings.Join(c.Envs, " "))
 	}
 	if c.ShellType != "" && c.ShellFlag != "" {
-		pts.WriteString(fmt.Sprintf("%s %s '%s'", c.ShellType, c.ShellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
+		pts.Fprintf("%s %s '%s'", c.ShellType, c.ShellFlag, escapeSingleQuotes(makeCommandMessage(name, args)))
 	} else {
-		pts.WriteString(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
+		pts.Fprintf("%s %s", name, strings.Join(args, " "))
 	}
 	return pts.String()
 }
