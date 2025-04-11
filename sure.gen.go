@@ -55,6 +55,18 @@ func (T *CommandConfig88Must) WithMatchMore(matchMore bool) (res *CommandConfig)
 	res = T.c.WithMatchMore(matchMore)
 	return res
 }
+func (T *CommandConfig88Must) WithTakeExits(takeExits map[int]string) (res *CommandConfig) {
+	res = T.c.WithTakeExits(takeExits)
+	return res
+}
+func (T *CommandConfig88Must) WithExpectExit(exitCode int, reason string) (res *CommandConfig) {
+	res = T.c.WithExpectExit(exitCode, reason)
+	return res
+}
+func (T *CommandConfig88Must) WithExpectCode(exitCode int) (res *CommandConfig) {
+	res = T.c.WithExpectCode(exitCode)
+	return res
+}
 func (T *CommandConfig88Must) Exec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.Exec(name, args...)
 	sure.Must(err1)
@@ -132,6 +144,18 @@ func (T *CommandConfig88Soft) WithMatchMore(matchMore bool) (res *CommandConfig)
 	res = T.c.WithMatchMore(matchMore)
 	return res
 }
+func (T *CommandConfig88Soft) WithTakeExits(takeExits map[int]string) (res *CommandConfig) {
+	res = T.c.WithTakeExits(takeExits)
+	return res
+}
+func (T *CommandConfig88Soft) WithExpectExit(exitCode int, reason string) (res *CommandConfig) {
+	res = T.c.WithExpectExit(exitCode, reason)
+	return res
+}
+func (T *CommandConfig88Soft) WithExpectCode(exitCode int) (res *CommandConfig) {
+	res = T.c.WithExpectCode(exitCode)
+	return res
+}
 func (T *CommandConfig88Soft) Exec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.Exec(name, args...)
 	sure.Soft(err1)
@@ -207,6 +231,18 @@ func (T *CommandConfig88Omit) WithMatchPipe(matchPipe func(line string) bool) (r
 }
 func (T *CommandConfig88Omit) WithMatchMore(matchMore bool) (res *CommandConfig) {
 	res = T.c.WithMatchMore(matchMore)
+	return res
+}
+func (T *CommandConfig88Omit) WithTakeExits(takeExits map[int]string) (res *CommandConfig) {
+	res = T.c.WithTakeExits(takeExits)
+	return res
+}
+func (T *CommandConfig88Omit) WithExpectExit(exitCode int, reason string) (res *CommandConfig) {
+	res = T.c.WithExpectExit(exitCode, reason)
+	return res
+}
+func (T *CommandConfig88Omit) WithExpectCode(exitCode int) (res *CommandConfig) {
+	res = T.c.WithExpectCode(exitCode)
 	return res
 }
 func (T *CommandConfig88Omit) Exec(name string, args ...string) (res []byte) {

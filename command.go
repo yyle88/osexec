@@ -29,6 +29,7 @@ type CommandConfig struct {
 	DebugMode bool     // enable debug mode. // 是否启用调试模式，即打印调试的日志。
 	MatchPipe func(line string) bool
 	MatchMore bool
+	TakeExits map[int]string
 }
 
 // NewCommandConfig creates and returns a new CommandConfig instance.
@@ -36,6 +37,7 @@ type CommandConfig struct {
 func NewCommandConfig() *CommandConfig {
 	return &CommandConfig{
 		DebugMode: debugModeOpen, // Initial value is consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 变量保持一致。
+		TakeExits: make(map[int]string),
 	}
 }
 
@@ -120,6 +122,33 @@ func (c *CommandConfig) WithMatchMore(matchMore bool) *CommandConfig {
 	return c
 }
 
+// WithTakeExits sets the accepted exit codes for CommandConfig and returns the updated instance.
+// WithTakeExits 设置 CommandConfig 的接受退出码集合并返回更新后的实例。
+func (c *CommandConfig) WithTakeExits(takeExits map[int]string) *CommandConfig {
+	//这里需要复制 map 避免出问题，其次是不要使用 clone 以免外面传的是 nil 就不好啦
+	expMap := make(map[int]string, len(takeExits))
+	for k, v := range takeExits {
+		expMap[k] = v
+	}
+	//这里完全覆盖而不是增补，是因为覆盖更符合预期，否则还得写增补逻辑
+	c.TakeExits = expMap
+	return c
+}
+
+// WithExpectExit adds an expected exit code to CommandConfig and returns the updated instance.
+// WithExpectExit 向 CommandConfig 添加一个期望的退出码并返回更新后的实例。
+func (c *CommandConfig) WithExpectExit(exitCode int, reason string) *CommandConfig {
+	c.TakeExits[exitCode] = reason
+	return c
+}
+
+// WithExpectCode adds an expected exit code to CommandConfig and returns the updated instance.
+// WithExpectCode 向 CommandConfig 添加一个期望的退出码并返回更新后的实例。
+func (c *CommandConfig) WithExpectCode(exitCode int) *CommandConfig {
+	c.TakeExits[exitCode] = "EXPECTED-EXIT-CODES"
+	return c
+}
+
 // Exec executes a shell command with the specified name and arguments, using the CommandConfig configuration.
 // Exec 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
 func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
@@ -127,7 +156,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	return utils.WarpMessage(done.VAE(command.CombinedOutput()), c.DebugMode)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.DebugMode, c.TakeExits)
 }
 
 func (c *CommandConfig) validateConfig(name string, args []string) error {
@@ -285,7 +314,8 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 func (c *CommandConfig) ShallowClone() *CommandConfig {
 	newConfig := new(CommandConfig)
 	*newConfig = *c
-	newConfig.Envs = slices.Clone(c.Envs) //这里为了避免踩内存还是得拷贝一份
+	newConfig.Envs = slices.Clone(c.Envs)      //这里为了避免踩内存还是得拷贝一份
+	newConfig.TakeExits = make(map[int]string) //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
 	return newConfig
 }
 

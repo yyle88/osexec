@@ -1,7 +1,10 @@
 package utils
 
 import (
+	"errors"
 	"fmt"
+	"os/exec"
+	"strconv"
 
 	"github.com/yyle88/done"
 	"github.com/yyle88/erero"
@@ -29,7 +32,29 @@ func ShowWarning(message string) {
 // WarpMessage handles the output of the executed command and wraps errors.
 // WarpMessage 处理执行命令的输出，并在出现错误时封装错误信息。
 func WarpMessage(a *done.Vae[byte], debugMode bool) ([]byte, error) {
+	return WarpResults(a, debugMode, map[int]string{})
+}
+
+func WarpResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, error) {
 	if a.E != nil {
+		if len(expectedExitCodes) > 0 {
+			if ext := new(exec.ExitError); errors.As(a.E, &ext) {
+				if reason, ok := expectedExitCodes[ext.ExitCode()]; ok {
+					if debugMode {
+						if reason != "" {
+							ShowMessage("EXIT-CODE:" + strconv.Itoa(ext.ExitCode()) + "-" + "REASON:" + reason)
+						} else {
+							ShowMessage("EXIT-CODE:" + strconv.Itoa(ext.ExitCode()))
+						}
+						if len(a.V) > 0 {
+							ShowMessage(string(a.V))
+						}
+					}
+					return a.V, nil
+				}
+			}
+		}
+
 		if debugMode {
 			if len(a.V) > 0 {
 				ShowWarning(string(a.V))

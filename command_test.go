@@ -66,3 +66,33 @@ func TestCommandConfig_ExecXshRun_WithSh(t *testing.T) {
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 }
+
+func TestCommandConfig_WithTakeExits(t *testing.T) {
+	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+		WithSh().
+		WithTakeExits(map[int]string{1: "DIFFERENCES FOUND"}).
+		Exec("diff", "-u", "go.mod", "go.sum")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}
+
+func TestCommandConfig_WithExpectExit(t *testing.T) {
+	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+		WithSh().
+		WithExpectExit(1, "DIFFERENCES FOUND").
+		Exec("diff", "-u", "go.mod", "go.sum")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}
+
+func TestCommandConfig_WithExpectCode(t *testing.T) {
+	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+		WithSh().
+		WithExpectCode(1). // DIFFERENCES FOUND // 当发现区别时就不算是有错误
+		Exec("diff", "-u", "go.mod", "go.sum")
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+}
