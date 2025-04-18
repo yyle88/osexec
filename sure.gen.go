@@ -1,6 +1,10 @@
 package osexec
 
-import "github.com/yyle88/sure"
+import (
+	"os/exec"
+
+	"github.com/yyle88/sure"
+)
 
 type CommandConfig88Must struct{ c *CommandConfig }
 
@@ -69,6 +73,11 @@ func (T *CommandConfig88Must) WithExpectCode(exitCode int) (res *CommandConfig) 
 }
 func (T *CommandConfig88Must) Exec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.Exec(name, args...)
+	sure.Must(err1)
+	return res
+}
+func (T *CommandConfig88Must) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, runWith)
 	sure.Must(err1)
 	return res
 }
@@ -161,6 +170,11 @@ func (T *CommandConfig88Soft) Exec(name string, args ...string) (res []byte) {
 	sure.Soft(err1)
 	return res
 }
+func (T *CommandConfig88Soft) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, runWith)
+	sure.Soft(err1)
+	return res
+}
 func (T *CommandConfig88Soft) StreamExec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.StreamExec(name, args...)
 	sure.Soft(err1)
@@ -247,6 +261,11 @@ func (T *CommandConfig88Omit) WithExpectCode(exitCode int) (res *CommandConfig) 
 }
 func (T *CommandConfig88Omit) Exec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.Exec(name, args...)
+	sure.Omit(err1)
+	return res
+}
+func (T *CommandConfig88Omit) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, runWith)
 	sure.Omit(err1)
 	return res
 }

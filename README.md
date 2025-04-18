@@ -86,7 +86,7 @@ func main() {
 
 Welcome to contribute to this project by submitting pull requests or reporting issues.
 
-If you find this package helpful, give it a star on GitHub!
+If you find this package valuable, give me some stars on GitHub! Thank you!!!
 
 **Thank you for your support!**
 

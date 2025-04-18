@@ -152,14 +152,25 @@ func (c *CommandConfig) WithExpectCode(exitCode int) *CommandConfig {
 // Exec executes a shell command with the specified name and arguments, using the CommandConfig configuration.
 // Exec 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
 func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
-	if err := c.validateConfig(name, args); err != nil {
+	if err := c.checkConfig(name, args); err != nil {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
 	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.DebugMode, c.TakeExits)
 }
 
-func (c *CommandConfig) validateConfig(name string, args []string) error {
+// ExecWith executes a shell command with the specified name and arguments, using the CommandConfig configuration.
+// ExecWith 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
+func (c *CommandConfig) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) ([]byte, error) {
+	if err := c.checkConfig(name, args); err != nil {
+		return nil, erero.Ero(err)
+	}
+	command := c.prepareCommand(name, args)
+	runWith(command)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.DebugMode, c.TakeExits)
+}
+
+func (c *CommandConfig) checkConfig(name string, args []string) error {
 	if name == "" {
 		return erero.New("can-not-execute-with-empty-command-name")
 	}
@@ -228,7 +239,7 @@ func (c *CommandConfig) StreamExec(name string, args ...string) ([]byte, error) 
 // ExecInPipe executes a shell command with the specified name and arguments, using the CommandConfig configuration, and returns the output as a byte slice.
 // ExecInPipe 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令，并返回输出的字节切片。
 func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) {
-	if err := c.validateConfig(name, args); err != nil {
+	if err := c.checkConfig(name, args); err != nil {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
@@ -312,11 +323,16 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 // ShallowClone creates a shallow copy of the CommandConfig instance.
 // ShallowClone 拷贝个新的 CommandConfig 实例，以便于实现总配置和子配置分隔.
 func (c *CommandConfig) ShallowClone() *CommandConfig {
-	newConfig := new(CommandConfig)
-	*newConfig = *c
-	newConfig.Envs = slices.Clone(c.Envs)      //这里为了避免踩内存还是得拷贝一份
-	newConfig.TakeExits = make(map[int]string) //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
-	return newConfig
+	return &CommandConfig{
+		Envs:      slices.Clone(c.Envs), //这里为了避免踩内存还是得拷贝一份
+		Path:      c.Path,               //在相同的位置
+		ShellType: "",                   //各个命令会自己设置
+		ShellFlag: "",                   //各个命令会自己设置
+		DebugMode: c.DebugMode,          //使用相同的
+		MatchPipe: nil,                  //各个命令会自己设置
+		MatchMore: false,                //各个命令会自己设置
+		TakeExits: make(map[int]string), //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
+	}
 }
 
 // GetSubClone creates a shallow copy of the CommandConfig instance with a new path and returns the updated instance.
