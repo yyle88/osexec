@@ -67,7 +67,7 @@ func main() {
 
 	output, err := config.Exec("echo", "Hello, World!")
 	if err != nil {
-		fmt.Println("Error:", err)
+		fmt.Println("Reason:", err)
 	} else {
 		fmt.Println("Output:", string(output))
 	}
@@ -78,13 +78,13 @@ func main() {
 
 ## License
 
-`osexec` is open-source and released under the MIT License. See the [LICENSE](LICENSE) file for more information.
+MIT License. See [LICENSE](LICENSE).
 
 ---
 
 ## Support
 
-Welcome to contribute to this project by submitting pull requests or reporting issues.
+Welcome to contribute to this project by submitting pull requests and reporting issues.
 
 If you find this package valuable, give me some stars on GitHub! Thank you!!!
 
@@ -94,6 +94,6 @@ If you find this package valuable, give me some stars on GitHub! Thank you!!!
 
 Give me stars. Thank you!!!
 
-## Starring
+## GitHub Stars
 
 [![starring](https://starchart.cc/yyle88/osexec.svg?variant=adaptive)](https://starchart.cc/yyle88/osexec)

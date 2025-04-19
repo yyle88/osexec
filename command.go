@@ -37,6 +37,7 @@ type CommandConfig struct {
 func NewCommandConfig() *CommandConfig {
 	return &CommandConfig{
 		DebugMode: debugModeOpen, // Initial value is consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 变量保持一致。
+		MatchPipe: func(line string) bool { return false },
 		TakeExits: make(map[int]string),
 	}
 }
@@ -301,10 +302,8 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
 		}
 
-		if (c.MatchMore || !matched) && c.MatchPipe != nil {
-			if c.MatchPipe(string(streamLine)) {
-				matched = true
-			}
+		if (c.MatchMore || !matched) && c.MatchPipe != nil && c.MatchPipe(string(streamLine)) {
+			matched = true
 		}
 
 		if err != nil {
@@ -324,14 +323,14 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 // ShallowClone 拷贝个新的 CommandConfig 实例，以便于实现总配置和子配置分隔.
 func (c *CommandConfig) ShallowClone() *CommandConfig {
 	return &CommandConfig{
-		Envs:      slices.Clone(c.Envs), //这里为了避免踩内存还是得拷贝一份
-		Path:      c.Path,               //在相同的位置
-		ShellType: "",                   //各个命令会自己设置
-		ShellFlag: "",                   //各个命令会自己设置
-		DebugMode: c.DebugMode,          //使用相同的
-		MatchPipe: nil,                  //各个命令会自己设置
-		MatchMore: false,                //各个命令会自己设置
-		TakeExits: make(map[int]string), //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
+		Envs:      slices.Clone(c.Envs),                    //这里为了避免踩内存还是得拷贝一份
+		Path:      c.Path,                                  //在相同的位置
+		ShellType: "",                                      //各个命令会自己设置
+		ShellFlag: "",                                      //各个命令会自己设置
+		DebugMode: c.DebugMode,                             //使用相同的
+		MatchPipe: func(line string) bool { return false }, //各个命令会自己设置
+		MatchMore: false,                                   //各个命令会自己设置
+		TakeExits: make(map[int]string),                    //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
 	}
 }
 

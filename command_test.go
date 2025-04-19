@@ -96,3 +96,16 @@ func TestCommandConfig_WithExpectCode(t *testing.T) {
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 }
+
+func TestCommandConfig_ExecWith(t *testing.T) {
+	data, err := osexec.NewCommandConfig().WithDebug().
+		ExecWith("grep", []string{"abc"},
+			func(command *exec.Cmd) {
+				command.Stdin = strings.NewReader("123abc\nabc456\n123xyz\nxyz456")
+			},
+		)
+	require.NoError(t, err)
+	t.Log(string(data))
+	require.NotEmpty(t, strings.TrimSpace(string(data)))
+	require.Equal(t, "123abc\nabc456", strings.TrimSpace(string(data)))
+}
