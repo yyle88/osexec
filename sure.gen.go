@@ -51,7 +51,7 @@ func (T *CommandConfig88Must) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Must) WithMatchPipe(matchPipe func(line string) bool) (res *CommandConfig) {
+func (T *CommandConfig88Must) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
 	res = T.c.WithMatchPipe(matchPipe)
 	return res
 }
@@ -145,7 +145,7 @@ func (T *CommandConfig88Soft) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Soft) WithMatchPipe(matchPipe func(line string) bool) (res *CommandConfig) {
+func (T *CommandConfig88Soft) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
 	res = T.c.WithMatchPipe(matchPipe)
 	return res
 }
@@ -239,7 +239,7 @@ func (T *CommandConfig88Omit) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Omit) WithMatchPipe(matchPipe func(line string) bool) (res *CommandConfig) {
+func (T *CommandConfig88Omit) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
 	res = T.c.WithMatchPipe(matchPipe)
 	return res
 }
