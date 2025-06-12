@@ -12,10 +12,34 @@ import (
 
 func TestCommandConfig_ExecInPath(t *testing.T) {
 	root := runpath.PARENT.Path()
-	data, err := osexec.NewCommandConfig().WithPath(root).Exec("ls", "-a")
-	require.NoError(t, err)
-	t.Log(string(data))
-	require.Contains(t, string(data), runpath.Name())
+
+	t.Run("case1", func(t *testing.T) {
+		data, err := osexec.NewCommandConfig().WithPath(root).Exec("ls", "-a")
+		require.NoError(t, err)
+		t.Log(string(data))
+		require.Contains(t, string(data), runpath.Name())
+	})
+
+	t.Run("case2", func(t *testing.T) {
+		data, err := osexec.NewCommandConfig().WithPath(root).WithDebug().Exec("ls", "-a")
+		require.NoError(t, err)
+		t.Log(string(data))
+		require.Contains(t, string(data), runpath.Name())
+	})
+
+	t.Run("case3", func(t *testing.T) {
+		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugShowCmd(true).Exec("ls", "-a")
+		require.NoError(t, err)
+		t.Log(string(data))
+		require.Contains(t, string(data), runpath.Name())
+	})
+
+	t.Run("case4", func(t *testing.T) {
+		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugShowRes(true).Exec("ls", "-a")
+		require.NoError(t, err)
+		t.Log(string(data))
+		require.Contains(t, string(data), runpath.Name())
+	})
 }
 
 func TestCommandConfig_ExecInEnvs(t *testing.T) {

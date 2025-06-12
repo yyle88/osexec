@@ -43,12 +43,20 @@ func (T *CommandConfig88Must) WithSh() (res *CommandConfig) {
 	res = T.c.WithSh()
 	return res
 }
+func (T *CommandConfig88Must) WithDebug() (res *CommandConfig) {
+	res = T.c.WithDebug()
+	return res
+}
 func (T *CommandConfig88Must) WithDebugMode(debugMode bool) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
 	return res
 }
-func (T *CommandConfig88Must) WithDebug() (res *CommandConfig) {
-	res = T.c.WithDebug()
+func (T *CommandConfig88Must) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowCmd(debugShowCmd)
+	return res
+}
+func (T *CommandConfig88Must) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Must) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
@@ -137,12 +145,20 @@ func (T *CommandConfig88Soft) WithSh() (res *CommandConfig) {
 	res = T.c.WithSh()
 	return res
 }
+func (T *CommandConfig88Soft) WithDebug() (res *CommandConfig) {
+	res = T.c.WithDebug()
+	return res
+}
 func (T *CommandConfig88Soft) WithDebugMode(debugMode bool) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
 	return res
 }
-func (T *CommandConfig88Soft) WithDebug() (res *CommandConfig) {
-	res = T.c.WithDebug()
+func (T *CommandConfig88Soft) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowCmd(debugShowCmd)
+	return res
+}
+func (T *CommandConfig88Soft) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Soft) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
@@ -231,12 +247,20 @@ func (T *CommandConfig88Omit) WithSh() (res *CommandConfig) {
 	res = T.c.WithSh()
 	return res
 }
+func (T *CommandConfig88Omit) WithDebug() (res *CommandConfig) {
+	res = T.c.WithDebug()
+	return res
+}
 func (T *CommandConfig88Omit) WithDebugMode(debugMode bool) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
 	return res
 }
-func (T *CommandConfig88Omit) WithDebug() (res *CommandConfig) {
-	res = T.c.WithDebug()
+func (T *CommandConfig88Omit) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowCmd(debugShowCmd)
+	return res
+}
+func (T *CommandConfig88Omit) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
+	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Omit) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
