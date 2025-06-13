@@ -6,6 +6,11 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestNewDebugMode(t *testing.T) {
+	require.Equal(t, DEBUG, NewDebugMode(true))
+	require.Equal(t, QUIET, NewDebugMode(false))
+}
+
 func Test_isShowCommand(t *testing.T) {
 	require.True(t, isShowCommand(DEBUG))
 	require.True(t, isShowCommand(SHOW_COMMAND))

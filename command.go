@@ -36,7 +36,7 @@ type CommandConfig struct {
 // NewCommandConfig 创建并返回一个新的 CommandConfig 实例。
 func NewCommandConfig() *CommandConfig {
 	return &CommandConfig{
-		DebugMode: tern.BVV(debugModeOpen, DEBUG, QUIET), // consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 保持一致。
+		DebugMode: NewDebugMode(debugModeOpen), // consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 保持一致。
 		MatchPipe: func(outputLine string) bool { return false },
 		TakeExits: make(map[int]string),
 	}
