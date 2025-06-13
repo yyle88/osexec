@@ -30,7 +30,7 @@ func TestGen(t *testing.T) {
 func TestCommandConfig88Must_Exec(t *testing.T) {
 	output := NewCommandConfig().
 		WithEnvs([]string{"A=1", "B=2"}).
-		WithDebugMode(true).
+		WithDebugMode(DEBUG).
 		WithBash().
 		Must().
 		Exec("echo", "$A", "$B")

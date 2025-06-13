@@ -47,16 +47,8 @@ func (T *CommandConfig88Must) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Must) WithDebugMode(debugMode bool) (res *CommandConfig) {
+func (T *CommandConfig88Must) WithDebugMode(debugMode DebugMode) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
-	return res
-}
-func (T *CommandConfig88Must) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowCmd(debugShowCmd)
-	return res
-}
-func (T *CommandConfig88Must) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Must) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
@@ -99,12 +91,12 @@ func (T *CommandConfig88Must) ExecInPipe(name string, args ...string) (res []byt
 	sure.Must(err1)
 	return res
 }
-func (T *CommandConfig88Must) ShallowClone() (res *CommandConfig) {
-	res = T.c.ShallowClone()
+func (T *CommandConfig88Must) NewConfig() (res *CommandConfig) {
+	res = T.c.NewConfig()
 	return res
 }
-func (T *CommandConfig88Must) GetSubClone(path string) (res *CommandConfig) {
-	res = T.c.GetSubClone(path)
+func (T *CommandConfig88Must) SubConfig(path string) (res *CommandConfig) {
+	res = T.c.SubConfig(path)
 	return res
 }
 
@@ -149,16 +141,8 @@ func (T *CommandConfig88Soft) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Soft) WithDebugMode(debugMode bool) (res *CommandConfig) {
+func (T *CommandConfig88Soft) WithDebugMode(debugMode DebugMode) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
-	return res
-}
-func (T *CommandConfig88Soft) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowCmd(debugShowCmd)
-	return res
-}
-func (T *CommandConfig88Soft) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Soft) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
@@ -201,12 +185,12 @@ func (T *CommandConfig88Soft) ExecInPipe(name string, args ...string) (res []byt
 	sure.Soft(err1)
 	return res
 }
-func (T *CommandConfig88Soft) ShallowClone() (res *CommandConfig) {
-	res = T.c.ShallowClone()
+func (T *CommandConfig88Soft) NewConfig() (res *CommandConfig) {
+	res = T.c.NewConfig()
 	return res
 }
-func (T *CommandConfig88Soft) GetSubClone(path string) (res *CommandConfig) {
-	res = T.c.GetSubClone(path)
+func (T *CommandConfig88Soft) SubConfig(path string) (res *CommandConfig) {
+	res = T.c.SubConfig(path)
 	return res
 }
 
@@ -251,16 +235,8 @@ func (T *CommandConfig88Omit) WithDebug() (res *CommandConfig) {
 	res = T.c.WithDebug()
 	return res
 }
-func (T *CommandConfig88Omit) WithDebugMode(debugMode bool) (res *CommandConfig) {
+func (T *CommandConfig88Omit) WithDebugMode(debugMode DebugMode) (res *CommandConfig) {
 	res = T.c.WithDebugMode(debugMode)
-	return res
-}
-func (T *CommandConfig88Omit) WithDebugShowCmd(debugShowCmd bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowCmd(debugShowCmd)
-	return res
-}
-func (T *CommandConfig88Omit) WithDebugShowRes(debugShowRes bool) (res *CommandConfig) {
-	res = T.c.WithDebugShowRes(debugShowRes)
 	return res
 }
 func (T *CommandConfig88Omit) WithMatchPipe(matchPipe func(outputLine string) bool) (res *CommandConfig) {
@@ -303,11 +279,11 @@ func (T *CommandConfig88Omit) ExecInPipe(name string, args ...string) (res []byt
 	sure.Omit(err1)
 	return res
 }
-func (T *CommandConfig88Omit) ShallowClone() (res *CommandConfig) {
-	res = T.c.ShallowClone()
+func (T *CommandConfig88Omit) NewConfig() (res *CommandConfig) {
+	res = T.c.NewConfig()
 	return res
 }
-func (T *CommandConfig88Omit) GetSubClone(path string) (res *CommandConfig) {
-	res = T.c.GetSubClone(path)
+func (T *CommandConfig88Omit) SubConfig(path string) (res *CommandConfig) {
+	res = T.c.SubConfig(path)
 	return res
 }

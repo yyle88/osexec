@@ -28,14 +28,14 @@ func TestCommandConfig_ExecInPath(t *testing.T) {
 	})
 
 	t.Run("case3", func(t *testing.T) {
-		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugShowCmd(true).Exec("ls", "-a")
+		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugMode(osexec.SHOW_COMMAND).Exec("ls", "-a")
 		require.NoError(t, err)
 		t.Log(string(data))
 		require.Contains(t, string(data), runpath.Name())
 	})
 
 	t.Run("case4", func(t *testing.T) {
-		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugShowRes(true).Exec("ls", "-a")
+		data, err := osexec.NewCommandConfig().WithPath(root).WithDebugMode(osexec.SHOW_OUTPUTS).Exec("ls", "-a")
 		require.NoError(t, err)
 		t.Log(string(data))
 		require.Contains(t, string(data), runpath.Name())
@@ -85,14 +85,14 @@ func TestCommandConfig_ExecXshRun_WithZsh(t *testing.T) {
 }
 
 func TestCommandConfig_ExecXshRun_WithSh(t *testing.T) {
-	data, err := osexec.NewCommandConfig().WithDebugMode(false).WithSh().Exec("echo $HOME")
+	data, err := osexec.NewCommandConfig().WithDebugMode(osexec.QUIET).WithSh().Exec("echo $HOME")
 	require.NoError(t, err)
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 }
 
 func TestCommandConfig_WithTakeExits(t *testing.T) {
-	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+	data, err := osexec.NewCommandConfig().WithDebugMode(osexec.DEBUG).
 		WithSh().
 		WithTakeExits(map[int]string{1: "DIFFERENCES FOUND"}).
 		Exec("diff", "-u", "go.mod", "go.sum")
@@ -102,7 +102,7 @@ func TestCommandConfig_WithTakeExits(t *testing.T) {
 }
 
 func TestCommandConfig_WithExpectExit(t *testing.T) {
-	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+	data, err := osexec.NewCommandConfig().WithDebugMode(osexec.DEBUG).
 		WithSh().
 		WithExpectExit(1, "DIFFERENCES FOUND").
 		Exec("diff", "-u", "go.mod", "go.sum")
@@ -112,7 +112,7 @@ func TestCommandConfig_WithExpectExit(t *testing.T) {
 }
 
 func TestCommandConfig_WithExpectCode(t *testing.T) {
-	data, err := osexec.NewCommandConfig().WithDebugMode(true).
+	data, err := osexec.NewCommandConfig().WithDebugMode(osexec.DEBUG).
 		WithSh().
 		WithExpectCode(1). // DIFFERENCES FOUND // 当发现区别时就不算是有错误
 		Exec("diff", "-u", "go.mod", "go.sum")

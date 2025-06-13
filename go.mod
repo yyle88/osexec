@@ -23,7 +23,7 @@ require (
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.13.1 // indirect
-	github.com/yyle88/formatgo v1.0.23 // indirect
+	github.com/yyle88/formatgo v1.0.24 // indirect
 	github.com/yyle88/must v0.0.25 // indirect
 	github.com/yyle88/mutexmap v1.0.13 // indirect
 	github.com/yyle88/rese v0.0.10 // indirect

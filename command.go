@@ -22,23 +22,21 @@ import (
 // CommandConfig represents the configuration for executing shell commands.
 // CommandConfig 表示执行 shell 命令的配置。
 type CommandConfig struct {
-	Envs         []string // Optional environment variables. // 填写可选的环境变量。
-	Path         string   // Optional execution path. // 填写可选的执行路径。
-	ShellType    string   // Optional type of shell to use, e.g., bash, zsh. // 填写可选的 shell 类型，例如 bash，zsh。
-	ShellFlag    string   // Optional shell flag, e.g., "-c". // 填写可选的 Shell 参数，例如 "-c"。
-	DebugMode    bool     // Enable debug mode. // 是否启用调试模式，即打印调试的日志。
-	DebugShowCmd bool
-	DebugShowRes bool
-	MatchPipe    func(outputLine string) bool
-	MatchMore    bool
-	TakeExits    map[int]string
+	Envs      []string  // Optional environment variables. // 填写可选的环境变量。
+	Path      string    // Optional execution path. // 填写可选的执行路径。
+	ShellType string    // Optional type of shell to use, e.g., bash, zsh. // 填写可选的 shell 类型，例如 bash，zsh。
+	ShellFlag string    // Optional shell flag, e.g., "-c". // 填写可选的 Shell 参数，例如 "-c"。
+	DebugMode DebugMode // Enable debug mode. // 是否启用调试模式，即打印调试的日志。
+	MatchPipe func(outputLine string) bool
+	MatchMore bool
+	TakeExits map[int]string
 }
 
 // NewCommandConfig creates and returns a new CommandConfig instance.
 // NewCommandConfig 创建并返回一个新的 CommandConfig 实例。
 func NewCommandConfig() *CommandConfig {
 	return &CommandConfig{
-		DebugMode: debugModeOpen, // Initial value is consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 变量保持一致。
+		DebugMode: tern.BVV(debugModeOpen, DEBUG, QUIET), // consistent with the debugModeOpen variable. // 初始值与 debugModeOpen 保持一致。
 		MatchPipe: func(outputLine string) bool { return false },
 		TakeExits: make(map[int]string),
 	}
@@ -101,40 +99,14 @@ func (c *CommandConfig) WithSh() *CommandConfig {
 // WithDebug sets the debug mode to true for CommandConfig and returns the updated instance.
 // WithDebug 将 CommandConfig 的调试模式设置为 true 并返回更新后的实例。
 func (c *CommandConfig) WithDebug() *CommandConfig {
-	return c.WithDebugMode(true)
+	return c.WithDebugMode(DEBUG)
 }
 
 // WithDebugMode sets the debug mode for CommandConfig and returns the updated instance.
 // WithDebugMode 设置 CommandConfig 的调试模式并返回更新后的实例。
-func (c *CommandConfig) WithDebugMode(debugMode bool) *CommandConfig {
+func (c *CommandConfig) WithDebugMode(debugMode DebugMode) *CommandConfig {
 	c.DebugMode = debugMode
 	return c
-}
-
-// WithDebugShowCmd sets the flag to show the command in debug mode for CommandConfig and returns the updated instance.
-// WithDebugShowCmd 设置 CommandConfig 的调试模式下显示命令的标志并返回更新后的实例。
-func (c *CommandConfig) WithDebugShowCmd(debugShowCmd bool) *CommandConfig {
-	c.DebugShowCmd = debugShowCmd
-	return c
-}
-
-// WithDebugShowRes sets the flag to show the command results in debug mode for CommandConfig and returns the updated instance.
-// WithDebugShowRes 设置 CommandConfig 的调试模式下显示命令结果的标志并返回更新后的实例。
-func (c *CommandConfig) WithDebugShowRes(debugShowRes bool) *CommandConfig {
-	c.DebugShowRes = debugShowRes
-	return c
-}
-
-// isShowCmd checks whether the command should be displayed based on the debug mode or DebugShowCmd flag.
-// isShowCmd 检查是否应根据调试模式或 DebugShowCmd 标志显示命令。
-func (c *CommandConfig) isShowCmd() bool {
-	return c.DebugMode || c.DebugShowCmd
-}
-
-// isShowRes checks whether the command results should be displayed based on the debug mode or DebugShowRes flag.
-// isShowRes 检查是否应根据调试模式或 DebugShowRes 标志显示命令结果。
-func (c *CommandConfig) isShowRes() bool {
-	return c.DebugMode || c.DebugShowRes
 }
 
 // WithMatchPipe sets the match pipe function for CommandConfig and returns the updated instance.
@@ -187,7 +159,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.isShowRes(), c.TakeExits)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), isShowOutputs(c.DebugMode), c.TakeExits)
 }
 
 // ExecWith executes a shell command with the specified name and arguments, using the CommandConfig configuration.
@@ -200,7 +172,7 @@ func (c *CommandConfig) ExecWith(name string, args []string, runWith func(comman
 	}
 	command := c.prepareCommand(name, args)
 	runWith(command)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.isShowRes(), c.TakeExits)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), isShowOutputs(c.DebugMode), c.TakeExits)
 }
 
 func (c *CommandConfig) checkConfig(name string, args []string, skipDepth int) error {
@@ -222,7 +194,7 @@ func (c *CommandConfig) checkConfig(name string, args []string, skipDepth int) e
 			return erero.New("can-not-execute-with-wrong-shell-options")
 		}
 	}
-	if c.isShowCmd() {
+	if isShowCommand(c.DebugMode) {
 		debugMessage := c.makeCommandMessage(name, args)
 		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.Skip(skipDepth).LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
@@ -312,17 +284,17 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	wg.Wait()
 
 	if outMatch {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.isShowRes())
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
 	}
 
 	if errMatch { //比如 "go: upgraded github.com/xx/xx vxx => vxx" 这就不算错误，而是正确的
-		return utils.WarpMessage(done.VAE(stderrBuffer.Bytes(), nil), c.isShowRes())
+		return utils.WarpMessage(done.VAE(stderrBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
 	}
 
 	if stderrBuffer.Len() > 0 {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.isShowRes())
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), isShowOutputs(c.DebugMode))
 	} else {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.isShowRes())
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
 	}
 }
 
@@ -332,7 +304,7 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 	for {
 		streamLine, _, err := reader.ReadLine()
 
-		if c.isShowRes() {
+		if isShowOutputs(c.DebugMode) {
 			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
 		}
 
@@ -353,25 +325,23 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 	}
 }
 
-// ShallowClone creates a shallow copy of the CommandConfig instance.
-// ShallowClone 拷贝个新的 CommandConfig 实例，以便于实现总配置和子配置分隔.
-func (c *CommandConfig) ShallowClone() *CommandConfig {
+// NewConfig creates a shallow copy of the CommandConfig instance.
+// NewConfig 拷贝个新的 CommandConfig 实例，以便于实现总配置和子配置分隔.
+func (c *CommandConfig) NewConfig() *CommandConfig {
 	return &CommandConfig{
-		Envs:         slices.Clone(c.Envs), //这里为了避免踩内存还是得拷贝一份
-		Path:         c.Path,               //在相同的位置
-		ShellType:    "",                   //各个命令会自己设置
-		ShellFlag:    "",                   //各个命令会自己设置
-		DebugMode:    c.DebugMode,          //使用相同的
-		DebugShowCmd: c.DebugShowCmd,
-		DebugShowRes: c.DebugShowRes,
-		MatchPipe:    func(outputLine string) bool { return false }, //各个命令会自己设置
-		MatchMore:    false,                                         //各个命令会自己设置
-		TakeExits:    make(map[int]string),                          //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
+		Envs:      slices.Clone(c.Envs),                          //这里为了避免踩内存还是得拷贝一份
+		Path:      c.Path,                                        //在相同的位置
+		ShellType: "",                                            //各个命令会自己设置
+		ShellFlag: "",                                            //各个命令会自己设置
+		DebugMode: c.DebugMode,                                   //使用相同的
+		MatchPipe: func(outputLine string) bool { return false }, //各个命令会自己设置
+		MatchMore: false,                                         //各个命令会自己设置
+		TakeExits: make(map[int]string),                          //这里很简单因为不同的子命令期望的错误码不同，这里就不克隆这个“有预期的错误码表”，避免错误被忽略
 	}
 }
 
-// GetSubClone creates a shallow copy of the CommandConfig instance with a new path and returns the updated instance.
-// GetSubClone 创建一个带有新路径的 CommandConfig 实例的浅拷贝并返回更新后的实例。
-func (c *CommandConfig) GetSubClone(path string) *CommandConfig {
-	return c.ShallowClone().WithPath(path)
+// SubConfig creates a shallow copy of the CommandConfig instance with a new path and returns the updated instance.
+// SubConfig 创建一个带有新路径的 CommandConfig 实例的浅拷贝并返回更新后的实例。
+func (c *CommandConfig) SubConfig(path string) *CommandConfig {
+	return c.NewConfig().WithPath(path)
 }
