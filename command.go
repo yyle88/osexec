@@ -159,7 +159,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), isShowOutputs(c.DebugMode), c.TakeExits)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
 // ExecWith executes a shell command with the specified name and arguments, using the CommandConfig configuration.
@@ -172,7 +172,19 @@ func (c *CommandConfig) ExecWith(name string, args []string, runWith func(comman
 	}
 	command := c.prepareCommand(name, args)
 	runWith(command)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), isShowOutputs(c.DebugMode), c.TakeExits)
+	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
+}
+
+// IsShowCommand checks whether the command should be displayed based on the debug mode or DebugShowCmd flag.
+// 检查是否应根据调试模式或 DebugShowCmd 标志显示命令。
+func (c *CommandConfig) IsShowCommand() bool {
+	return isShowCommand(c.DebugMode)
+}
+
+// IsShowOutputs checks whether the command results should be displayed based on the debug mode or DebugShowRes flag.
+// 检查是否应根据调试模式或 DebugShowRes 标志显示命令结果。
+func (c *CommandConfig) IsShowOutputs() bool {
+	return isShowOutputs(c.DebugMode)
 }
 
 func (c *CommandConfig) checkConfig(name string, args []string, skipDepth int) error {
@@ -194,7 +206,7 @@ func (c *CommandConfig) checkConfig(name string, args []string, skipDepth int) e
 			return erero.New("can-not-execute-with-wrong-shell-options")
 		}
 	}
-	if isShowCommand(c.DebugMode) {
+	if c.IsShowCommand() {
 		debugMessage := c.makeCommandMessage(name, args)
 		utils.ShowCommand(debugMessage)
 		zaplog.ZAPS.Skip(skipDepth).LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
@@ -284,17 +296,17 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	wg.Wait()
 
 	if outMatch {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.IsShowOutputs())
 	}
 
 	if errMatch { //比如 "go: upgraded github.com/xx/xx vxx => vxx" 这就不算错误，而是正确的
-		return utils.WarpMessage(done.VAE(stderrBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
+		return utils.WarpMessage(done.VAE(stderrBuffer.Bytes(), nil), c.IsShowOutputs())
 	}
 
 	if stderrBuffer.Len() > 0 {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), isShowOutputs(c.DebugMode))
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.IsShowOutputs())
 	} else {
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), isShowOutputs(c.DebugMode))
+		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), nil), c.IsShowOutputs())
 	}
 }
 
@@ -304,7 +316,7 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 	for {
 		streamLine, _, err := reader.ReadLine()
 
-		if isShowOutputs(c.DebugMode) {
+		if c.IsShowOutputs() {
 			zaplog.SUG.Debugln(debugMessage, erotic.Sprint(string(streamLine)))
 		}
 

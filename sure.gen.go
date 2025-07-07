@@ -81,6 +81,14 @@ func (T *CommandConfig88Must) ExecWith(name string, args []string, runWith func(
 	sure.Must(err1)
 	return res
 }
+func (T *CommandConfig88Must) IsShowCommand() (res bool) {
+	res = T.c.IsShowCommand()
+	return res
+}
+func (T *CommandConfig88Must) IsShowOutputs() (res bool) {
+	res = T.c.IsShowOutputs()
+	return res
+}
 func (T *CommandConfig88Must) StreamExec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.StreamExec(name, args...)
 	sure.Must(err1)
@@ -175,6 +183,14 @@ func (T *CommandConfig88Soft) ExecWith(name string, args []string, runWith func(
 	sure.Soft(err1)
 	return res
 }
+func (T *CommandConfig88Soft) IsShowCommand() (res bool) {
+	res = T.c.IsShowCommand()
+	return res
+}
+func (T *CommandConfig88Soft) IsShowOutputs() (res bool) {
+	res = T.c.IsShowOutputs()
+	return res
+}
 func (T *CommandConfig88Soft) StreamExec(name string, args ...string) (res []byte) {
 	res, err1 := T.c.StreamExec(name, args...)
 	sure.Soft(err1)
@@ -267,6 +283,14 @@ func (T *CommandConfig88Omit) Exec(name string, args ...string) (res []byte) {
 func (T *CommandConfig88Omit) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
 	res, err1 := T.c.ExecWith(name, args, runWith)
 	sure.Omit(err1)
+	return res
+}
+func (T *CommandConfig88Omit) IsShowCommand() (res bool) {
+	res = T.c.IsShowCommand()
+	return res
+}
+func (T *CommandConfig88Omit) IsShowOutputs() (res bool) {
+	res = T.c.IsShowOutputs()
 	return res
 }
 func (T *CommandConfig88Omit) StreamExec(name string, args ...string) (res []byte) {
