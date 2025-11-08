@@ -1,3 +1,15 @@
+// Package osexec provides simple and flexible command execution utilities
+//
+// osexec 提供简单而灵活的命令执行工具包
+//
+// Provides enhanced abstraction on os/exec with customizable configurations
+// 提供增强的 os/exec 抽象接口，支持可定制的配置选项
+//
+// Supports custom environment variables, working paths, and shell options
+// 支持自定义环境变量、工作路径和 shell 选项
+//
+// Includes debug modes and intelligent error handling capabilities
+// 包含调试模式和智能错误处理能力
 package osexec
 
 import (
@@ -17,7 +29,7 @@ import (
 // Exec 执行一个命令且获得结果。
 func Exec(name string, args ...string) ([]byte, error) {
 	if name == "" {
-		return nil, erero.New("can-not-execute-with-empty-command-name")
+		return nil, erero.New("can-not-execute-with-blank-command-name")
 	}
 	if strings.Contains(name, " ") {
 		return nil, erero.New("can-not-contains-space-in-command-name")
@@ -31,14 +43,14 @@ func Exec(name string, args ...string) ([]byte, error) {
 	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
-// ExecInPath executes a command in a specified directory.
-// ExecInPath 在指定的目录中执行一个命令。
+// ExecInPath executes a command in a specified DIR.
+// ExecInPath 在指定的 DIR 中执行一个命令。
 func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 	if path == "" {
-		return nil, erero.New("can-not-execute-in-empty-directory-path")
+		return nil, erero.New("can-not-execute-in-blank-DIR-path")
 	}
 	if name == "" {
-		return nil, erero.New("can-not-execute-with-empty-command-name")
+		return nil, erero.New("can-not-execute-with-blank-command-name")
 	}
 	if strings.Contains(name, " ") {
 		return nil, erero.New("can-not-contains-space-in-command-name")
@@ -57,7 +69,7 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 // ExecInEnvs 使用自定义环境变量执行一个命令。
 func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 	if name == "" {
-		return nil, erero.New("can-not-execute-with-empty-command-name")
+		return nil, erero.New("can-not-execute-with-blank-command-name")
 	}
 	if strings.Contains(name, " ") {
 		return nil, erero.New("can-not-contains-space-in-command-name")
@@ -68,8 +80,7 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 		zaplog.ZAPS.Skip1.LOG.Debug("EXEC_IN_ENVS:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
-	command.Env = os.Environ() // Add custom environment variables
-	command.Env = append(command.Env, envs...)
+	command.Env = append(os.Environ(), envs...) // Add custom environment variables on top of system envs // 在系统环境变量基础上添加自定义环境变量
 	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
@@ -83,7 +94,7 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 		return nil, erero.New("can-not-execute-with-wrong-shell-options")
 	}
 	if name == "" {
-		return nil, erero.New("can-not-execute-with-empty-command-name")
+		return nil, erero.New("can-not-execute-with-blank-command-name")
 	}
 	if debugModeOpen {
 		debugMessage := strings.TrimSpace(fmt.Sprintf("%s %s '%s'", shellType, shellFlag, escapeSingleQuotes(makeCommandMessage(name, args))))
@@ -100,8 +111,8 @@ func makeCommandMessage(name string, args []string) string {
 	return strings.TrimSpace(fmt.Sprintf("%s %s", name, strings.Join(args, " ")))
 }
 
-// escapeSingleQuotes escapes single quotes in a string for safe use in shell commands.
-// escapeSingleQuotes 转义字符串中的单引号，以便在 shell 命令中安全使用。
+// escapeSingleQuotes escapes single quotes in a string to ensure safe use in shell commands
+// escapeSingleQuotes 转义字符串中的单引号，确保在 shell 命令中安全使用
 func escapeSingleQuotes(input string) string {
 	return strings.ReplaceAll(input, "'", `'\''`)
 }

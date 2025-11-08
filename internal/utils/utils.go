@@ -1,3 +1,12 @@
+// Package utils provides utilities supporting command execution and output formatting
+//
+// utils 提供命令执行和输出格式化工具
+//
+// Provides support functions to show command output with colors
+// 提供带颜色的命令输出显示支持函数
+//
+// Handles command results wrapping and exit code processing
+// 处理命令结果包装和退出码处理
 package utils
 
 import (
@@ -11,30 +20,44 @@ import (
 	"github.com/yyle88/eroticgo"
 )
 
+// ShowCommand displays command message in blue with dividing lines
+// ShowCommand 用蓝色显示命令消息，带分隔线
 func ShowCommand(message string) {
 	fmt.Println(eroticgo.BLUE.Sprint("---"))
 	fmt.Println(eroticgo.BLUE.Sprint(message))
 	fmt.Println(eroticgo.BLUE.Sprint("---"))
 }
 
+// ShowMessage displays success message in green with dividing lines
+// ShowMessage 用绿色显示成功消息，带分隔线
 func ShowMessage(message string) {
 	fmt.Println(eroticgo.GREEN.Sprint("---"))
 	fmt.Println(eroticgo.GREEN.Sprint(message))
 	fmt.Println(eroticgo.GREEN.Sprint("---"))
 }
 
+// ShowWarning displays warning message in red with dividing lines
+// ShowWarning 用红色显示警告消息，带分隔线
 func ShowWarning(message string) {
 	fmt.Println(eroticgo.RED.Sprint("---"))
 	fmt.Println(eroticgo.RED.Sprint(message))
 	fmt.Println(eroticgo.RED.Sprint("---"))
 }
 
-// WarpMessage handles the output of the executed command and wraps errors.
-// WarpMessage 处理执行命令的输出，并在出现错误时封装错误信息。
+// WarpOutputs handles command output that succeeds without errors
+// WarpOutputs 处理成功的命令输出，无错误
+func WarpOutputs(outputs []byte, debugMode bool) ([]byte, error) {
+	return WarpMessage(done.VAE(outputs, nil), debugMode)
+}
+
+// WarpMessage handles the output of the executed command and wraps errors
+// WarpMessage 处理执行命令的输出，并在出现错误时封装错误信息
 func WarpMessage(a *done.Vae[byte], debugMode bool) ([]byte, error) {
 	return WarpResults(a, debugMode, map[int]string{})
 }
 
+// WarpResults handles command output with expected exit codes support
+// WarpResults 处理命令输出，支持预期的退出码
 func WarpResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, error) {
 	if a.E != nil {
 		if len(expectedExitCodes) > 0 {
