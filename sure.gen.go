@@ -1,3 +1,8 @@
+// Code generated using sure/sure_cls_gen. DO NOT EDIT.
+// This file was auto generated via github.com/yyle88/sure
+// Generated from: sure.gen_test.go:27 -> osexec.TestGen
+// ========== SURE:DO-NOT-EDIT-SECTION:END ==========
+
 package osexec
 
 import (
@@ -76,10 +81,15 @@ func (T *CommandConfig88Must) Exec(name string, args ...string) (res []byte) {
 	sure.Must(err1)
 	return res
 }
-func (T *CommandConfig88Must) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
-	res, err1 := T.c.ExecWith(name, args, runWith)
+func (T *CommandConfig88Must) ExecWith(name string, args []string, prepare func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, prepare)
 	sure.Must(err1)
 	return res
+}
+func (T *CommandConfig88Must) ExecTake(name string, args ...string) (res []byte, res1 int) {
+	res, res1, err2 := T.c.ExecTake(name, args...)
+	sure.Must(err2)
+	return res, res1
 }
 func (T *CommandConfig88Must) IsShowCommand() (res bool) {
 	res = T.c.IsShowCommand()
@@ -178,10 +188,15 @@ func (T *CommandConfig88Soft) Exec(name string, args ...string) (res []byte) {
 	sure.Soft(err1)
 	return res
 }
-func (T *CommandConfig88Soft) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
-	res, err1 := T.c.ExecWith(name, args, runWith)
+func (T *CommandConfig88Soft) ExecWith(name string, args []string, prepare func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, prepare)
 	sure.Soft(err1)
 	return res
+}
+func (T *CommandConfig88Soft) ExecTake(name string, args ...string) (res []byte, res1 int) {
+	res, res1, err2 := T.c.ExecTake(name, args...)
+	sure.Soft(err2)
+	return res, res1
 }
 func (T *CommandConfig88Soft) IsShowCommand() (res bool) {
 	res = T.c.IsShowCommand()
@@ -280,10 +295,15 @@ func (T *CommandConfig88Omit) Exec(name string, args ...string) (res []byte) {
 	sure.Omit(err1)
 	return res
 }
-func (T *CommandConfig88Omit) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) (res []byte) {
-	res, err1 := T.c.ExecWith(name, args, runWith)
+func (T *CommandConfig88Omit) ExecWith(name string, args []string, prepare func(command *exec.Cmd)) (res []byte) {
+	res, err1 := T.c.ExecWith(name, args, prepare)
 	sure.Omit(err1)
 	return res
+}
+func (T *CommandConfig88Omit) ExecTake(name string, args ...string) (res []byte, res1 int) {
+	res, res1, err2 := T.c.ExecTake(name, args...)
+	sure.Omit(err2)
+	return res, res1
 }
 func (T *CommandConfig88Omit) IsShowCommand() (res bool) {
 	res = T.c.IsShowCommand()

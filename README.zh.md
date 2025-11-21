@@ -183,6 +183,20 @@ config := osexec.NewCommandConfig().
 	})
 ```
 
+### 获取退出码
+
+使用 `ExecTake` 获取退出码进行精细控制：
+
+```go
+// ExecTake 返回输出、退出码和错误
+output, exitCode, err := osexec.NewCommandConfig().
+	WithExpectCode(1).
+	ExecTake("diff", "file1.txt", "file2.txt")
+
+// 文件不同时 exitCode = 1，文件相同时 exitCode = 0
+fmt.Println("Exit code:", exitCode)
+```
+
 ### 链式配置
 
 组合多个配置选项：
@@ -219,7 +233,8 @@ output, err := config.Exec("command-name", "arg1", "arg2")
 ### 执行方法
 
 - **Exec(name string, args ...string)**：执行命令并返回输出
-- **ExecWith(name string, args []string, runWith func(*exec.Cmd))**：使用自定义命令设置执行
+- **ExecTake(name string, args ...string)**：执行命令并返回输出、退出码和错误
+- **ExecWith(name string, args []string, prepare func(*exec.Cmd))**：使用自定义命令设置执行
 - **StreamExec(name string, args ...string)**：使用管道处理执行命令
 - **ExecInPipe(name string, args ...string)**：使用 stdout/stderr 管道处理执行
 
@@ -233,20 +248,20 @@ output, err := config.Exec("command-name", "arg1", "arg2")
 ---
 
 <!-- TEMPLATE (ZH) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-09-26 07:39:27.188023 +0000 UTC -->
+<!-- VERSION 2025-11-20 04:26:32.402216 +0000 UTC -->
 
 ## 📄 许可证类型
 
-MIT 许可证。详见 [LICENSE](LICENSE)。
+MIT 许可证 - 详见 [LICENSE](LICENSE)。
 
 ---
 
-## 🤝 项目贡献
+## 💬 联系与反馈
 
 非常欢迎贡献代码！报告 BUG、建议功能、贡献代码：
 
-- 🐛 **发现问题？** 在 GitHub 上提交问题并附上重现步骤
-- 💡 **功能建议？** 创建 issue 讨论您的想法
+- 🐛 **问题报告？** 在 GitHub 上提交问题并附上重现步骤
+- 💡 **新颖思路？** 创建 issue 讨论
 - 📖 **文档疑惑？** 报告问题，帮助我们改进文档
 - 🚀 **需要功能？** 分享使用场景，帮助理解需求
 - ⚡ **性能瓶颈？** 报告慢操作，帮助我们优化性能

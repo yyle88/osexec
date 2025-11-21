@@ -166,15 +166,32 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 
 // ExecWith executes a shell command with the specified name and arguments, using the CommandConfig configuration.
 // ExecWith 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
-func (c *CommandConfig) ExecWith(name string, args []string, runWith func(command *exec.Cmd)) ([]byte, error) {
+func (c *CommandConfig) ExecWith(name string, args []string, prepare func(command *exec.Cmd)) ([]byte, error) {
 	const skipDepth = 1
 
 	if err := c.checkConfig(name, args, skipDepth+1); err != nil {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	runWith(command)
+	prepare(command)
 	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
+}
+
+// ExecTake executes a shell command and returns output, exit code, and error
+// Returns exit code for fine-grained control over command results
+// Exit code 0 indicates success, non-zero indicates various failure conditions
+//
+// ExecTake 执行 shell 命令并返回输出、退出码和错误
+// 返回退出码以便精细控制命令结果
+// 退出码 0 表示成功，非零表示各种失败情况
+func (c *CommandConfig) ExecTake(name string, args ...string) ([]byte, int, error) {
+	const skipDepth = 1
+
+	if err := c.checkConfig(name, args, skipDepth+1); err != nil {
+		return nil, -1, erero.Ero(err)
+	}
+	command := c.prepareCommand(name, args)
+	return utils.WarpOutcome(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
 // IsShowCommand checks if the command should be displayed based on the debug mode.
@@ -357,7 +374,7 @@ func (c *CommandConfig) readPipe(reader *bufio.Reader, ptx *printgo.PTX, debugMe
 				ptx.Write(streamLine)
 				return matched
 			}
-			panic(erero.Wro(err)) // Panic on read error, which is rare // 读取错误时 panic，这种情况很罕见
+			panic(erero.Wro(err)) // Panic on failure for read error, which is rare // 读取错误时 panic，这种情况很罕见
 		}
 		ptx.Write(streamLine)
 		ptx.Println()

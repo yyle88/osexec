@@ -1,7 +1,9 @@
 package osexec_test
 
 import (
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"testing"
 
@@ -154,4 +156,34 @@ func TestCommandConfig_ExecWith(t *testing.T) {
 	t.Log(string(data))
 	require.NotEmpty(t, strings.TrimSpace(string(data)))
 	require.Equal(t, "123abc\nabc456", strings.TrimSpace(string(data)))
+}
+
+func TestCommandConfig_ExecTake(t *testing.T) {
+	tempDIR := t.TempDir()
+
+	fileA := filepath.Join(tempDIR, "a.txt")
+	fileB := filepath.Join(tempDIR, "b.txt")
+
+	// Create two files with different content
+	// 创建两个内容不同的文件
+	require.NoError(t, os.WriteFile(fileA, []byte("hello\n"), 0644))
+	require.NoError(t, os.WriteFile(fileB, []byte("world\n"), 0644))
+
+	// diff returns exit code 1 when files differ
+	// diff 在文件不同时返回退出码 1
+	output, exitCode, err := osexec.NewCommandConfig().WithExpectCode(1).ExecTake("diff", fileA, fileB)
+	t.Log(string(output))
+	require.NoError(t, err)
+	require.Equal(t, 1, exitCode)
+
+	// Make files identical
+	// 使文件内容相同
+	require.NoError(t, os.WriteFile(fileB, []byte("hello\n"), 0644))
+
+	// diff returns exit code 0 when files are identical
+	// diff 在文件相同时返回退出码 0
+	output, exitCode, err = osexec.NewCommandConfig().WithExpectCode(1).ExecTake("diff", fileA, fileB)
+	t.Log(string(output))
+	require.NoError(t, err)
+	require.Equal(t, 0, exitCode)
 }

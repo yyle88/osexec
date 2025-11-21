@@ -183,6 +183,20 @@ config := osexec.NewCommandConfig().
 	})
 ```
 
+### Get Exit Code
+
+Use `ExecTake` to get the exit code with fine-grained precision:
+
+```go
+// ExecTake returns output, exit code, and error
+output, exitCode, err := osexec.NewCommandConfig().
+	WithExpectCode(1).
+	ExecTake("diff", "file1.txt", "file2.txt")
+
+// exitCode = 1 when files differ, exitCode = 0 when identical
+fmt.Println("Exit code:", exitCode)
+```
+
 ### Chainable Configuration
 
 Combine multiple configuration options:
@@ -219,7 +233,8 @@ output, err := config.Exec("command-name", "arg1", "arg2")
 ### Execution Methods
 
 - **Exec(name string, args ...string)**: Executes command and returns output
-- **ExecWith(name string, args []string, runWith func(*exec.Cmd))**: Executes with custom command setup
+- **ExecTake(name string, args ...string)**: Executes command and returns output, exit code, and error
+- **ExecWith(name string, args []string, prepare func(*exec.Cmd))**: Executes with custom command setup
 - **StreamExec(name string, args ...string)**: Executes command with pipe handling
 - **ExecInPipe(name string, args ...string)**: Executes with stdout/stderr pipe processing
 
@@ -233,20 +248,20 @@ output, err := config.Exec("command-name", "arg1", "arg2")
 ---
 
 <!-- TEMPLATE (EN) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-09-26 07:39:27.188023 +0000 UTC -->
+<!-- VERSION 2025-11-20 04:26:32.402216 +0000 UTC -->
 
 ## 📄 License
 
-MIT License. See [LICENSE](LICENSE).
+MIT License - see [LICENSE](LICENSE).
 
 ---
 
-## 🤝 Contributing
+## 💬 Contact & Feedback
 
 Contributions are welcome! Report bugs, suggest features, and contribute code:
 
-- 🐛 **Found a mistake?** Open an issue on GitHub with reproduction steps
-- 💡 **Have a feature idea?** Create an issue to discuss the suggestion
+- 🐛 **Mistake reports?** Open an issue on GitHub with reproduction steps
+- 💡 **Fresh ideas?** Create an issue to discuss
 - 📖 **Documentation confusing?** Report it so we can improve
 - 🚀 **Need new features?** Share the use cases to help us understand requirements
 - ⚡ **Performance issue?** Help us optimize through reporting slow operations
