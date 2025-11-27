@@ -1,11 +1,11 @@
 package example3_test
 
 import (
-	"os/exec"
 	"testing"
 
 	"github.com/stretchr/testify/require"
 	"github.com/yyle88/osexec"
+	"github.com/yyle88/osexec/osexectest"
 )
 
 // TestBashExecution demonstrates bash shell command execution
@@ -37,13 +37,7 @@ func TestShExecution(t *testing.T) {
 // TestZshExecution demonstrates zsh shell command execution
 // TestZshExecution 演示 zsh shell 命令执行
 func TestZshExecution(t *testing.T) {
-	// Check if zsh is available on this system
-	// 检查系统中是否有 zsh
-	path, err := exec.LookPath("zsh")
-	if err != nil {
-		t.Skip("zsh is not available on this system, skipping test case")
-	}
-	t.Logf("Found zsh at: %s", path)
+	osexectest.SkipIfCommandNotFound(t, "zsh")
 
 	// Execute command using zsh shell
 	// 使用 zsh shell 执行命令

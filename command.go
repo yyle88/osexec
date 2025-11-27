@@ -164,8 +164,11 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
-// ExecWith executes a shell command with the specified name and arguments, using the CommandConfig configuration.
-// ExecWith 使用 CommandConfig 的配置执行带有指定名称和参数的 shell 命令。
+// ExecWith executes a command with custom exec.Cmd preparation
+// Allows setting stdin, extra env vars, and additional cmd fields via prepare callback
+//
+// ExecWith 执行命令，支持自定义 exec.Cmd 配置
+// 通过 prepare 回调可设置 stdin、额外环境变量和其它 cmd 字段
 func (c *CommandConfig) ExecWith(name string, args []string, prepare func(command *exec.Cmd)) ([]byte, error) {
 	const skipDepth = 1
 
@@ -177,13 +180,13 @@ func (c *CommandConfig) ExecWith(name string, args []string, prepare func(comman
 	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
-// ExecTake executes a shell command and returns output, exit code, and error
-// Returns exit code for fine-grained control over command results
-// Exit code 0 indicates success, non-zero indicates various failure conditions
+// ExecTake executes a command and returns output, exit code, and an issue if one exists
+// Returns exit code enabling fine-grained handling of command outcomes
+// Exit code 0 indicates success, non-zero indicates various conditions
 //
-// ExecTake 执行 shell 命令并返回输出、退出码和错误
-// 返回退出码以便精细控制命令结果
-// 退出码 0 表示成功，非零表示各种失败情况
+// ExecTake 执行命令并返回输出、退出码和错误（如果有的话）
+// 返回退出码以便精细处理命令结果
+// 退出码 0 表示成功，非零表示各种情况
 func (c *CommandConfig) ExecTake(name string, args ...string) ([]byte, int, error) {
 	const skipDepth = 1
 
@@ -194,14 +197,14 @@ func (c *CommandConfig) ExecTake(name string, args ...string) ([]byte, int, erro
 	return utils.WarpOutcome(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
-// IsShowCommand checks if the command should be displayed based on the debug mode.
-// 检查是否应根据调试模式显示命令。
+// IsShowCommand checks if the command should be displayed based on the debug mode
+// IsShowCommand 检查是否应根据调试模式显示命令
 func (c *CommandConfig) IsShowCommand() bool {
 	return isShowCommand(c.DebugMode)
 }
 
-// IsShowOutputs checks if the command results should be displayed based on the debug mode.
-// 检查是否应根据调试模式显示命令结果。
+// IsShowOutputs checks if the command results should be displayed based on the debug mode
+// IsShowOutputs 检查是否应根据调试模式显示命令结果
 func (c *CommandConfig) IsShowOutputs() bool {
 	return isShowOutputs(c.DebugMode)
 }

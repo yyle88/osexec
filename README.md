@@ -245,10 +245,36 @@ output, err := config.Exec("command-name", "arg1", "arg2")
 - **SHOW_COMMAND**: Show command just
 - **SHOW_OUTPUTS**: Show outputs just
 
+## Test Utilities
+
+The `osexectest` package provides assistance functions used in writing tests that involve command execution.
+
+### Skipping Tests due to Missing Commands
+
+When writing tests that depend on outside commands (e.g., `zsh`, `git`, `tree`), it's good practice to skip them if the needed command is not present in the test environment. The `SkipIfCommandNotFound` function helps you do this with ease.
+
+```go
+package my_test
+
+import (
+    "testing"
+
+    "github.com/yyle88/osexec/osexectest"
+)
+
+func TestSomethingThatNeedsZsh(t *testing.T) {
+    // This test will be skipped on its own if 'zsh' is not in the system's PATH.
+    osexectest.SkipIfCommandNotFound(t, "zsh")
+
+    // ... rest of the test code that uses 'zsh'
+}
+```
+This avoids test failures in environments where specific command-line tools are not installed.
+
 ---
 
 <!-- TEMPLATE (EN) BEGIN: STANDARD PROJECT FOOTER -->
-<!-- VERSION 2025-11-20 04:26:32.402216 +0000 UTC -->
+<!-- VERSION 2025-11-25 03:52:28.131064 +0000 UTC -->
 
 ## 📄 License
 
@@ -282,7 +308,7 @@ New code contributions, follow this process:
 4. **Branch**: Create a feature branch (`git checkout -b feature/xxx`).
 5. **Code**: Implement the changes with comprehensive tests
 6. **Testing**: (Golang project) Ensure tests pass (`go test ./...`) and follow Go code style conventions
-7. **Documentation**: Update documentation to support client-facing changes and use significant commit messages
+7. **Documentation**: Update documentation to support client-facing changes
 8. **Stage**: Stage changes (`git add .`)
 9. **Commit**: Commit changes (`git commit -m "Add feature xxx"`) ensuring backward compatible code
 10. **Push**: Push to the branch (`git push origin feature/xxx`).

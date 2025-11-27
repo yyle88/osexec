@@ -10,11 +10,11 @@
 package utils
 
 import (
-	"errors"
 	"fmt"
 	"os/exec"
 	"strconv"
 
+	"github.com/pkg/errors"
 	"github.com/yyle88/done"
 	"github.com/yyle88/erero"
 	"github.com/yyle88/eroticgo"
@@ -103,7 +103,10 @@ func WarpResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]st
 func WarpOutcome(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, int, error) {
 	output, err := WarpResults(a, debugMode, expectedExitCodes)
 	if err != nil {
-		return output, ExceptsCode(a.E), erero.Wro(err)
+		exitCode := ExceptsCode(a.E)
+		// Use errors.WithMessagef instead of erero to wrap without logging
+		// 使用 errors.WithMessagef 而非 erero 包装错误，避免重复打印日志
+		return output, exitCode, errors.WithMessagef(err, "command exit code: %d", exitCode)
 	}
 	if a.E != nil {
 		return output, ExceptsCode(a.E), nil
@@ -111,11 +114,11 @@ func WarpOutcome(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]st
 	return output, 0, nil
 }
 
-// ExceptsCode extracts exit code from command execution error
-// Returns 0 if no error, actual exit code if ExitError, -1 otherwise
+// ExceptsCode extracts exit code from command execution issue
+// Returns 0 with no issue, the exit code if ExitError, -1 in remaining cases
 //
-// ExceptsCode 从命令执行错误中提取退出码
-// 无错误返回 0，ExitError 返回实际退出码，其他情况返回 -1
+// ExceptsCode 从命令执行问题中提取退出码
+// 无问题返回 0，ExitError 返回退出码，其余情况返回 -1
 func ExceptsCode(err error) int {
 	if err == nil {
 		return 0

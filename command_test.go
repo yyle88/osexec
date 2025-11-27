@@ -9,6 +9,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/yyle88/osexec"
+	"github.com/yyle88/osexec/osexectest"
 	"github.com/yyle88/runpath"
 )
 
@@ -85,12 +86,7 @@ func TestCommandConfig_ExecXshRun_WithBash2(t *testing.T) {
 // TestCommandConfig_ExecXshRun_WithZsh tests zsh shell execution with environment check
 // TestCommandConfig_ExecXshRun_WithZsh 测试带环境检查的 zsh shell 命令执行
 func TestCommandConfig_ExecXshRun_WithZsh(t *testing.T) {
-	// 检测环境是否支持 zsh
-	path, err := exec.LookPath("zsh")
-	if err != nil { // 假如测试环境里没有 zsh 就会报错
-		t.Skip("zsh is not available on this system, skipping test case")
-	}
-	t.Log(path)
+	osexectest.SkipIfCommandNotFound(t, "zsh")
 
 	data, err := osexec.NewCommandConfig().WithZsh().Exec("echo", "$HOME")
 	require.NoError(t, err)
@@ -158,6 +154,8 @@ func TestCommandConfig_ExecWith(t *testing.T) {
 	require.Equal(t, "123abc\nabc456", strings.TrimSpace(string(data)))
 }
 
+// TestCommandConfig_ExecTake tests command execution with exit code capture
+// TestCommandConfig_ExecTake 测试带退出码捕获的命令执行
 func TestCommandConfig_ExecTake(t *testing.T) {
 	tempDIR := t.TempDir()
 
@@ -169,19 +167,19 @@ func TestCommandConfig_ExecTake(t *testing.T) {
 	require.NoError(t, os.WriteFile(fileA, []byte("hello\n"), 0644))
 	require.NoError(t, os.WriteFile(fileB, []byte("world\n"), 0644))
 
-	// diff returns exit code 1 when files differ
-	// diff 在文件不同时返回退出码 1
+	// diff returns exit code 1 when files have differences
+	// diff 在文件有差异时返回退出码 1
 	output, exitCode, err := osexec.NewCommandConfig().WithExpectCode(1).ExecTake("diff", fileA, fileB)
 	t.Log(string(output))
 	require.NoError(t, err)
 	require.Equal(t, 1, exitCode)
 
-	// Make files identical
-	// 使文件内容相同
+	// Make files the same
+	// 使文件内容一致
 	require.NoError(t, os.WriteFile(fileB, []byte("hello\n"), 0644))
 
-	// diff returns exit code 0 when files are identical
-	// diff 在文件相同时返回退出码 0
+	// diff returns exit code 0 when files match
+	// diff 在文件一致时返回退出码 0
 	output, exitCode, err = osexec.NewCommandConfig().WithExpectCode(1).ExecTake("diff", fileA, fileB)
 	t.Log(string(output))
 	require.NoError(t, err)
