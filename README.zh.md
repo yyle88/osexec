@@ -1,7 +1,7 @@
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yyle88/osexec/release.yml?branch=main&label=BUILD)](https://github.com/yyle88/osexec/actions/workflows/release.yml?query=branch%3Amain)
 [![GoDoc](https://pkg.go.dev/badge/github.com/yyle88/osexec)](https://pkg.go.dev/github.com/yyle88/osexec)
 [![Coverage Status](https://img.shields.io/coveralls/github/yyle88/osexec/main.svg)](https://coveralls.io/github/yyle88/osexec?branch=main)
-[![Supported Go Versions](https://img.shields.io/badge/Go-1.22%2C%201.23%2C%201.24%2C%201.25-lightgrey.svg)](https://github.com/yyle88/osexec)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.22%2C%201.23%2C%201.24%2C%201.25-lightgrey.svg)](https://go.dev/)
 [![GitHub Release](https://img.shields.io/github/release/yyle88/osexec.svg)](https://github.com/yyle88/osexec/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yyle88/osexec)](https://goreportcard.com/report/github.com/yyle88/osexec)
 
@@ -270,6 +270,36 @@ func TestSomethingThatNeedsZsh(t *testing.T) {
 }
 ```
 这可以避免在未安装特定命令行工具的环境中出现测试失败。
+
+### 在 TestMain 中跳过所有测试
+
+当包中的所有测试都依赖于特定命令时，可以在 `TestMain` 中使用 `ExitIfCommandNotFound` 来跳过整个测试文件：
+
+```go
+package my_test
+
+import (
+    "testing"
+
+    "github.com/yyle88/osexec/osexectest"
+)
+
+func TestMain(m *testing.M) {
+    // 如果 'bash' 不可用，以退出码 0（跳过）退出
+    osexectest.ExitIfCommandNotFound(m, "bash")
+    m.Run()
+}
+```
+
+如需自定义退出码，可以使用 `ExitWithCodeIfCommandNotFound`：
+
+```go
+func TestMain(m *testing.M) {
+    // 如果 'bash' 不可用，以退出码 1（失败）退出
+    osexectest.ExitWithCodeIfCommandNotFound(m, "bash", 1)
+    m.Run()
+}
+```
 
 ---
 

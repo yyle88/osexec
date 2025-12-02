@@ -13,7 +13,7 @@ require (
 	github.com/yyle88/runpath v1.0.25
 	github.com/yyle88/sure v0.0.42
 	github.com/yyle88/syntaxgo v0.0.53
-	github.com/yyle88/tern v0.0.9
+	github.com/yyle88/tern v0.0.10
 	github.com/yyle88/zaplog v0.0.27
 	go.uber.org/zap v1.27.1
 )

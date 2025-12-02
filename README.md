@@ -1,7 +1,7 @@
 [![GitHub Workflow Status (branch)](https://img.shields.io/github/actions/workflow/status/yyle88/osexec/release.yml?branch=main&label=BUILD)](https://github.com/yyle88/osexec/actions/workflows/release.yml?query=branch%3Amain)
 [![GoDoc](https://pkg.go.dev/badge/github.com/yyle88/osexec)](https://pkg.go.dev/github.com/yyle88/osexec)
 [![Coverage Status](https://img.shields.io/coveralls/github/yyle88/osexec/main.svg)](https://coveralls.io/github/yyle88/osexec?branch=main)
-[![Supported Go Versions](https://img.shields.io/badge/Go-1.22%2C%201.23%2C%201.24%2C%201.25-lightgrey.svg)](https://github.com/yyle88/osexec)
+[![Supported Go Versions](https://img.shields.io/badge/Go-1.22%2C%201.23%2C%201.24%2C%201.25-lightgrey.svg)](https://go.dev/)
 [![GitHub Release](https://img.shields.io/github/release/yyle88/osexec.svg)](https://github.com/yyle88/osexec/releases)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yyle88/osexec)](https://goreportcard.com/report/github.com/yyle88/osexec)
 
@@ -22,7 +22,7 @@ Simple utilities to use Golang's `os/exec` package.
 - **Custom Execution Configurations**: Execute commands with customizable environment variables, working paths, and shell options
 - **Chainable API**: Fluent interface when building command configurations
 - **Shell Support**: Built-in support with bash, zsh, and sh shells
-- **Debug Modes**: Multiple debug levels for command and output management
+- **Debug Modes**: Multiple debug levels to manage command and output options
 - **Exit Code Handling**: Accept specific exit codes as success
 - **Environment Variables**: Simple environment variable management
 - **Path Management**: Execute commands in specific paths
@@ -270,6 +270,36 @@ func TestSomethingThatNeedsZsh(t *testing.T) {
 }
 ```
 This avoids test failures in environments where specific command-line tools are not installed.
+
+### Skipping All Tests in TestMain
+
+When all tests in a package depend on a specific command, use `ExitIfCommandNotFound` in `TestMain` to skip the entire test file:
+
+```go
+package my_test
+
+import (
+    "testing"
+
+    "github.com/yyle88/osexec/osexectest"
+)
+
+func TestMain(m *testing.M) {
+    // Exit with code 0 (skip) if 'bash' is not available
+    osexectest.ExitIfCommandNotFound(m, "bash")
+    m.Run()
+}
+```
+
+To customize the exit code, use `ExitWithCodeIfCommandNotFound`:
+
+```go
+func TestMain(m *testing.M) {
+    // Exit with code 1 (failure) if 'bash' is not available
+    osexectest.ExitWithCodeIfCommandNotFound(m, "bash", 1)
+    m.Run()
+}
+```
 
 ---
 
