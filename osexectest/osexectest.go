@@ -59,3 +59,47 @@ func ExitWithCodeIfCommandNotFound(m *testing.M, name string, code int) {
 	}
 	zaplog.SUG.Infof("[%s] is available on this system at: (%s)", name, absPath)
 }
+
+// SkipIfEnvNotSet skips the test if the specified environment variable is not set
+// Logs the environment variable value when found
+//
+// SkipIfEnvNotSet 如果指定的环境变量未设置则跳过测试
+// 找到环境变量时会打印其值
+func SkipIfEnvNotSet(t *testing.T, name string) {
+	must.Full(t)
+
+	value, exists := os.LookupEnv(name)
+	if !exists {
+		t.Skipf("[%s] environment variable is not set, skipping test case", name)
+	}
+	t.Logf("[%s] environment variable is set with value: (%s)", name, value)
+}
+
+// ExitIfEnvNotSet exits TestMain with code 0 if the specified environment variable is not set
+// Use this in TestMain to skip tests when an environment variable is unavailable
+//
+// ExitIfEnvNotSet 如果指定的环境变量未设置则以退出码 0 退出 TestMain
+// 在 TestMain 中使用，当环境变量不可用时跳过测试
+func ExitIfEnvNotSet(m *testing.M, name string) {
+	ExitWithCodeIfEnvNotSet(must.Full(m), name, 0)
+}
+
+// ExitWithCodeIfEnvNotSet exits TestMain with specified code if the environment variable is not set
+// Use code 0 to skip tests gracefully, non-zero to indicate failure
+//
+// ExitWithCodeIfEnvNotSet 如果环境变量未设置则以指定退出码退出 TestMain
+// 使用 0 表示优雅跳过测试，非零表示失败
+func ExitWithCodeIfEnvNotSet(m *testing.M, name string, code int) {
+	must.Full(m)
+
+	value, exists := os.LookupEnv(name)
+	if !exists {
+		if code == 0 {
+			zaplog.SUG.Debugf("[%s] environment variable is not set, skipping test case", name)
+		} else {
+			zaplog.SUG.Errorf("[%s] environment variable is not set, skipping test case", name)
+		}
+		os.Exit(code)
+	}
+	zaplog.SUG.Infof("[%s] environment variable is set with value: (%s)", name, value)
+}

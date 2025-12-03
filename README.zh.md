@@ -301,6 +301,29 @@ func TestMain(m *testing.M) {
 }
 ```
 
+### 因缺少环境变量而跳过测试
+
+当测试依赖特定环境变量（例如 `API_KEY`、`DATABASE_URL`）时，可以使用 `SkipIfEnvNotSet` 优雅地跳过测试：
+
+```go
+func TestSomethingThatNeedsApiKey(t *testing.T) {
+    // 如果 'API_KEY' 环境变量未设置，此测试将自动跳过
+    osexectest.SkipIfEnvNotSet(t, "API_KEY")
+
+    // ... 使用 API key 的其余测试代码
+}
+```
+
+在 `TestMain` 中使用 `ExitIfEnvNotSet` 可以在环境变量缺失时跳过整个测试文件：
+
+```go
+func TestMain(m *testing.M) {
+    // 如果 'DATABASE_URL' 未设置，以退出码 0（跳过）退出
+    osexectest.ExitIfEnvNotSet(m, "DATABASE_URL")
+    m.Run()
+}
+```
+
 ---
 
 <!-- TEMPLATE (ZH) BEGIN: STANDARD PROJECT FOOTER -->

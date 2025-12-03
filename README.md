@@ -301,6 +301,29 @@ func TestMain(m *testing.M) {
 }
 ```
 
+### Skipping Tests due to Missing Environment Variables
+
+When tests depend on specific environment variables (e.g., `API_KEY`, `DATABASE_URL`), use `SkipIfEnvNotSet` to skip them gracefully:
+
+```go
+func TestSomethingThatNeedsApiKey(t *testing.T) {
+    // This test will be skipped if 'API_KEY' environment variable is not set
+    osexectest.SkipIfEnvNotSet(t, "API_KEY")
+
+    // ... rest of the test code that uses the API key
+}
+```
+
+Use `ExitIfEnvNotSet` in `TestMain` to skip the entire test file when an environment variable is missing:
+
+```go
+func TestMain(m *testing.M) {
+    // Exit with code 0 (skip) if 'DATABASE_URL' is not set
+    osexectest.ExitIfEnvNotSet(m, "DATABASE_URL")
+    m.Run()
+}
+```
+
 ---
 
 <!-- TEMPLATE (EN) BEGIN: STANDARD PROJECT FOOTER -->
