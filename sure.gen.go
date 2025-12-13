@@ -1,6 +1,6 @@
 // Code generated using sure/sure_cls_gen. DO NOT EDIT.
 // This file was auto generated via github.com/yyle88/sure
-// Generated from: sure.gen_test.go:29 -> osexec.TestGen
+// Generated from: sure.gen_test.go:30 -> osexec_test.TestGen
 // ========== SURE:DO-NOT-EDIT-SECTION:END ==========
 
 package osexec

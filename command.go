@@ -161,7 +161,7 @@ func (c *CommandConfig) Exec(name string, args ...string) ([]byte, error) {
 		return nil, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
+	return utils.WrapResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
 // ExecWith executes a command with custom exec.Cmd preparation
@@ -177,7 +177,7 @@ func (c *CommandConfig) ExecWith(name string, args []string, prepare func(comman
 	}
 	command := c.prepareCommand(name, args)
 	prepare(command)
-	return utils.WarpResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
+	return utils.WrapResults(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
 // ExecTake executes a command and returns output, exit code, and an issue if one exists
@@ -194,7 +194,7 @@ func (c *CommandConfig) ExecTake(name string, args ...string) ([]byte, int, erro
 		return nil, -1, erero.Ero(err)
 	}
 	command := c.prepareCommand(name, args)
-	return utils.WarpOutcome(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
+	return utils.WrapOutcome(done.VAE(command.CombinedOutput()), c.IsShowOutputs(), c.TakeExits)
 }
 
 // IsShowCommand checks if the command should be displayed based on the debug mode
@@ -330,13 +330,13 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	// When output matched, exit with success status (can succeed even if erw != nil)
 	// 当输出匹配成功时，以成功状态退出（即使 erw != nil 也可以成功）
 	if outMatch {
-		return utils.WarpResults(done.VAE(stdoutBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
+		return utils.WrapResults(done.VAE(stdoutBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
 	}
 
 	// If stderr matched, return with stderr data (e.g., "go: upgraded xxx")
 	// 如果 stderr 匹配成功，返回 stderr 数据（比如 "go: upgraded xxx"）
 	if errMatch {
-		return utils.WarpResults(done.VAE(stderrBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
+		return utils.WrapResults(done.VAE(stderrBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
 	}
 
 	// No match found, check errors in sequence
@@ -344,18 +344,18 @@ func (c *CommandConfig) ExecInPipe(name string, args ...string) ([]byte, error) 
 	if erw != nil {
 		// Command failed with non-zero exit code
 		// 命令以非零退出码失败
-		return utils.WarpResults(done.VAE(stdoutBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
+		return utils.WrapResults(done.VAE(stdoutBuffer.Bytes(), erw), c.IsShowOutputs(), c.TakeExits)
 	}
 
 	if stderrBuffer.Len() > 0 {
 		// Command succeeded but has stderr content
 		// 命令成功但有 stderr 内容
-		return utils.WarpMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.IsShowOutputs())
+		return utils.WrapMessage(done.VAE(stdoutBuffer.Bytes(), erero.New(stderrBuffer.String())), c.IsShowOutputs())
 	}
 
 	// Command succeeded with no errors
 	// 命令成功且无错误
-	return utils.WarpOutputs(stdoutBuffer.Bytes(), c.IsShowOutputs())
+	return utils.WrapOutputs(stdoutBuffer.Bytes(), c.IsShowOutputs())
 }
 
 // readPipe reads from the provided reader and writes to the provided PTX buffer, using the specified debug message and colors.

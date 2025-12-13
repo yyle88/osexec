@@ -40,7 +40,7 @@ func Exec(name string, args ...string) ([]byte, error) {
 		zaplog.ZAPS.Skip1.LOG.Debug("EXEC:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(name, args...)
-	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
+	return utils.WrapMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecInPath executes a command in a specified DIR.
@@ -62,7 +62,7 @@ func ExecInPath(path string, name string, args ...string) ([]byte, error) {
 	}
 	command := exec.Command(name, args...)
 	command.Dir = path
-	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
+	return utils.WrapMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecInEnvs executes a command with custom environment variables.
@@ -81,7 +81,7 @@ func ExecInEnvs(envs []string, name string, args ...string) ([]byte, error) {
 	}
 	command := exec.Command(name, args...)
 	command.Env = append(os.Environ(), envs...) // Add custom environment variables on top of system envs // 在系统环境变量基础上添加自定义环境变量
-	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
+	return utils.WrapMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // ExecXshRun executes a command using a specific shell type and shell flag.
@@ -102,7 +102,7 @@ func ExecXshRun(shellType, shellFlag string, name string, args ...string) ([]byt
 		zaplog.ZAPS.Skip1.LOG.Debug("EXEC_XSH_RUN:", zap.String("CMD", debugMessage))
 	}
 	command := exec.Command(shellType, "-c", name+" "+strings.Join(args, " "))
-	return utils.WarpMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
+	return utils.WrapMessage(done.VAE(command.CombinedOutput()), debugModeOpen)
 }
 
 // makeCommandMessage formats a command name and its arguments into a single command-line string.

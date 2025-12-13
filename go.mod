@@ -8,13 +8,13 @@ require (
 	github.com/yyle88/done v1.0.28
 	github.com/yyle88/erero v1.0.24
 	github.com/yyle88/eroticgo v0.0.5
-	github.com/yyle88/must v0.0.28
+	github.com/yyle88/must v0.0.29
 	github.com/yyle88/printgo v1.0.6
 	github.com/yyle88/runpath v1.0.25
 	github.com/yyle88/sure v0.0.42
 	github.com/yyle88/syntaxgo v0.0.53
 	github.com/yyle88/tern v0.0.10
-	github.com/yyle88/zaplog v0.0.27
+	github.com/yyle88/zaplog v0.0.28
 	go.uber.org/zap v1.27.1
 )
 

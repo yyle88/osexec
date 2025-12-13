@@ -25,8 +25,8 @@ github.com/yyle88/eroticgo v0.0.5 h1:M+FRXhxc7iocIYNBK47xs3JrbXiyz98fmjeD7P2Yf0I
 github.com/yyle88/eroticgo v0.0.5/go.mod h1:wNqNlyxaytmiiLphw6ct/VqZZ/tO6S05HbajBiG2xs0=
 github.com/yyle88/formatgo v1.0.28 h1:xetQgoIpSnUkgL3EkPx3AP1Tl0uS/1d03NhmcFrWcqo=
 github.com/yyle88/formatgo v1.0.28/go.mod h1:3IwR7CXcv1UcZm6tLpaG/tCB4tXf5UktXS810zaPj7c=
-github.com/yyle88/must v0.0.28 h1:p6iO/tD3wuHfaiILQixI7IoZ501384wdAfgFnFlL1t0=
-github.com/yyle88/must v0.0.28/go.mod h1:3KE9bwEdCCodFDmyXQOMLnjKBI+TD0uW+tf1ZH0dxlo=
+github.com/yyle88/must v0.0.29 h1:hEcuuWSkpFB97gkcrXHSfjxGSkYiv8J6wy18yWAUuyw=
+github.com/yyle88/must v0.0.29/go.mod h1:zdbS6m5NzOhEqsO45wOaxDdQsh5YT3Tyz0DlY4rBpko=
 github.com/yyle88/mutexmap v1.0.15 h1:vqwtvomfzddcuBNg8hofWnILRFK2STJhWU7AufuNS50=
 github.com/yyle88/mutexmap v1.0.15/go.mod h1:NqwsKlK+NkL18i4BepeyCgtenXuw4N5UUnEX9XBfPA8=
 github.com/yyle88/printgo v1.0.6 h1:b53uyCdlijObvuyHVECiiEWQIDfuOpuHVrkNQIdR5bU=
@@ -41,8 +41,8 @@ github.com/yyle88/syntaxgo v0.0.53 h1:3W4S5ncRdq3hUp3Qjw4GqB+mAxypJCycMo/mMJP+1v
 github.com/yyle88/syntaxgo v0.0.53/go.mod h1:68EidTlDxVi/iaCJeg0menpA4v/xbq+ITxa1aKdmjLo=
 github.com/yyle88/tern v0.0.10 h1:2MvDoVyfIeEzskMpLE6B07dtRpSqI6LaeUD/mGuLW7o=
 github.com/yyle88/tern v0.0.10/go.mod h1:OHHE2G1gYaX4q0uu3sG9JAK9dBjHboxGcTXbRPVoGeQ=
-github.com/yyle88/zaplog v0.0.27 h1:Bd/XWeAeRDEsFdtHphEqPK+W3M9WNd/dzf5x6YXeSkY=
-github.com/yyle88/zaplog v0.0.27/go.mod h1:0BOxIR1lFh4vdiCyR5zuj4DmTFK36FbpjOWAdjMwSDU=
+github.com/yyle88/zaplog v0.0.28 h1:WLe3ErsaQyPvElyUM1TfG7JLf2carXn5dxlKb2Gw+c4=
+github.com/yyle88/zaplog v0.0.28/go.mod h1:swT5bfVndDjigcSx6BgPcKkD2SOHw0YQKmvT6UJZ3Mc=
 go.uber.org/goleak v1.3.0 h1:2K3zAYmnTNqV73imy9J1T3WC+gmCePx2hEGkimedGto=
 go.uber.org/goleak v1.3.0/go.mod h1:CoHD4mav9JJNrW/WLlf7HGZPjdw8EucARQHekz1X6bE=
 go.uber.org/multierr v1.11.0 h1:blXXJkSxSSfBVBlC76pxqeO+LN3aDfLQo+309xJstO0=

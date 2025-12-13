@@ -44,21 +44,21 @@ func ShowWarning(message string) {
 	fmt.Println(eroticgo.RED.Sprint("---"))
 }
 
-// WarpOutputs handles command output that succeeds without errors
-// WarpOutputs 处理成功的命令输出，无错误
-func WarpOutputs(outputs []byte, debugMode bool) ([]byte, error) {
-	return WarpMessage(done.VAE(outputs, nil), debugMode)
+// WrapOutputs handles command output that succeeds without errors
+// WrapOutputs 处理成功的命令输出，无错误
+func WrapOutputs(outputs []byte, debugMode bool) ([]byte, error) {
+	return WrapMessage(done.VAE(outputs, nil), debugMode)
 }
 
-// WarpMessage handles the output of the executed command and wraps errors
-// WarpMessage 处理执行命令的输出，并在出现错误时封装错误信息
-func WarpMessage(a *done.Vae[byte], debugMode bool) ([]byte, error) {
-	return WarpResults(a, debugMode, map[int]string{})
+// WrapMessage handles the output of the executed command and wraps errors
+// WrapMessage 处理执行命令的输出，并在出现错误时封装错误信息
+func WrapMessage(a *done.Vae[byte], debugMode bool) ([]byte, error) {
+	return WrapResults(a, debugMode, map[int]string{})
 }
 
-// WarpResults handles command output with expected exit codes support
-// WarpResults 处理命令输出，支持预期的退出码
-func WarpResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, error) {
+// WrapResults handles command output with expected exit codes support
+// WrapResults 处理命令输出，支持预期的退出码
+func WrapResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, error) {
 	if a.E != nil {
 		if len(expectedExitCodes) > 0 {
 			if ext := new(exec.ExitError); errors.As(a.E, &ext) {
@@ -95,13 +95,13 @@ func WarpResults(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]st
 	return a.V, nil
 }
 
-// WarpOutcome handles command output and returns exit code
+// WrapOutcome handles command output and returns exit code
 // Combines output wrapping with exit code extraction
 //
-// WarpOutcome 处理命令输出并返回退出码
+// WrapOutcome 处理命令输出并返回退出码
 // 结合输出包装和退出码提取
-func WarpOutcome(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, int, error) {
-	output, err := WarpResults(a, debugMode, expectedExitCodes)
+func WrapOutcome(a *done.Vae[byte], debugMode bool, expectedExitCodes map[int]string) ([]byte, int, error) {
+	output, err := WrapResults(a, debugMode, expectedExitCodes)
 	if err != nil {
 		exitCode := ExceptsCode(a.E)
 		// Use errors.WithMessagef instead of erero to wrap without logging
